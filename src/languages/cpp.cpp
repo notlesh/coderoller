@@ -1,6 +1,8 @@
 #include "languages/cpp.h"
 
 #include <memory>
+
+#include <memory>
 #include <iostream>
 #include <fstream>
 
@@ -10,6 +12,7 @@
 
 using namespace roller;
 using std::unique_ptr;
+using std::shared_ptr;
 using std::ofstream;
 using std::endl;
 
@@ -24,11 +27,14 @@ CPPGenerator::~CPPGenerator() {
 }
 
 // generate
-void CPPGenerator::generate( const GenConfig& config ) {
+void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 
-	ofstream out( "/tmp/out.h" );
+	// TODO: this should be passed to generate...?
+	File outputFile( config->_outputDir, "out.h" );
+	Log::i( "Writting CPP to %s", outputFile.getFullPath().c_str() );
+	ofstream out( outputFile.getFullPath() );
 
-	for ( Class c : config._package._classes ) {
+	for ( Class c : config->_package._classes ) {
 
 		// print out "class Foo {"
 		out << "class " << c._name << " {" << endl;
@@ -38,12 +44,15 @@ void CPPGenerator::generate( const GenConfig& config ) {
 
 		for ( Field f : c._fields ) {
 
+			Log::i( "Processing field %s", f._name.c_str() );
+
 			// print out variable declaration
 			out << "\t" << getDataTypeName( f._dataType ) << " _" << f._name << ";" << endl;
 		}
 
 		// close class
 		out << "};" << endl;
+		out << endl;
 
 	}
 

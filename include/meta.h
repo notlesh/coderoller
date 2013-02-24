@@ -1,11 +1,14 @@
 #ifndef __CR_META_H_
 #define __CR_META_H_
 
-#include "cr_constants.h"
-
 #include <string>
 #include <list>
 
+#include "core/file.h"
+
+#include "cr_constants.h"
+
+using namespace roller;
 using std::string;
 using std::list;
 
@@ -46,6 +49,7 @@ struct GenConfig {
 
 	Package _package;
 	list<Language> _languages;
+	File _outputDir;
 };
 
 };

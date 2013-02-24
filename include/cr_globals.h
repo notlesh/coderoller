@@ -11,6 +11,10 @@ using std::shared_ptr;
 
 namespace cr {
 
+// command line config
+extern File g_inputFile;
+extern File g_outputDir;
+
 /**
  * Store generators for each language
  */

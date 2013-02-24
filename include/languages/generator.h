@@ -1,8 +1,12 @@
 #ifndef __CR_GENERATOR_H_
 #define __CR_GENERATOR_H_
 
+#include <memory>
+
 #include "cr_constants.h"
 #include "meta.h"
+
+using std::shared_ptr;
 
 namespace cr {
 
@@ -21,7 +25,7 @@ public:
 	/**
 	 * Generate code
 	 */
-	virtual void generate( const GenConfig& config ) = 0;
+	virtual void generate( shared_ptr<GenConfig> config ) = 0;
 };
 
 };

@@ -1,9 +1,13 @@
 #ifndef __CR_CPP_H_
 #define __CR_CPP_H_
 
+#include <memory>
+
 #include "languages/generator.h"
 #include "cr_constants.h"
 #include "meta.h"
+
+using std::shared_ptr;
 
 namespace cr {
 
@@ -27,7 +31,7 @@ public:
 	/**
 	 * Generate code
 	 */
-	virtual void generate( const GenConfig& config );
+	virtual void generate( shared_ptr<GenConfig> config );
 
 	/**
 	 * Return the C++ data type string for a given DataType

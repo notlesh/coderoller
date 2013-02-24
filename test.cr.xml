@@ -1,0 +1,14 @@
+<CodeRoller languages="CPP">
+
+	<class name="Test1">
+		<field type="ui8" name="shortInt" />
+		<field type="ui64" name="longInt" />
+		<field type="string" name="foo" />
+	</class>
+
+	<class name="Test2">
+		<field type="f64" name="argle" />
+		<field type="f32" name="bargle" />
+	</class>
+
+</CodeRoller>

@@ -13,9 +13,14 @@ using std::shared_ptr;
 namespace cr {
 
 /**
+ * Parse XML document
+ */
+shared_ptr<GenConfig> parseXML( const char* filename );
+
+/**
  * Generate code.
  */
-void generateAll( const GenConfig& config );
+void generateAll( shared_ptr<GenConfig> config );
 
 }
 

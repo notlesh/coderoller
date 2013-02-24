@@ -8,6 +8,7 @@ QMAKE_CXX = colorgcc
 
 INCLUDEPATH += include/ \
 		../roller/include \
+		./tinyxml2/ \
 
 debug:LIBS += -L../roller/debug/ -lroller \
  
@@ -15,9 +16,11 @@ release:LIBS += -L../roller/release/ -lroller \
 
 SOURCES = $$files(src/*.cpp) \
 		$$files(src/languages/*.cpp) \
+		tinyxml2/tinyxml2.cpp \
 
 HEADERS = $$files(include/*.h) \
 		$$files(include/languages/*.h) \
+		tinyxml2/tinyxml2.h \
  
 release:DESTDIR = release
 release:OBJECTS_DIR = release/.obj

@@ -10,6 +10,9 @@ using std::dynamic_pointer_cast;
 
 namespace cr {
 
+File g_inputFile;
+File g_outputDir;
+
 map<Language, shared_ptr<CodeGenerator>> g_codeGenerators;
 
 // static code block

@@ -1,6 +1,14 @@
 #ifndef __CR_CR_CONSTANTS_H_
 #define __CR_CR_CONSTANTS_H_
 
+#include "core/exception.h"
+#include "core/file.h"
+
+using namespace roller;
+
+#define CR_MAJOR_VERSION 0
+#define CR_MINOR_VERSION 1
+
 namespace cr {
 
 /** 
@@ -26,6 +34,30 @@ enum class DataType {
 enum class Language {
 	NONE = 0,
 	CPP
+};
+
+/** 
+ * InvalidNodeNameException
+ */
+class InvalidNodeNameException : public RollerException {
+
+public:
+
+	// TODO: replace with C++11 Inherited Constructors if they ever get implemented
+	template<class ... Args> 
+	InvalidNodeNameException(Args&& ... args) : RollerException(args...) { } 
+};
+
+/** 
+ * MissingAttributeException
+ */
+class MissingAttributeException : public RollerException {
+
+public:
+
+	// TODO: replace with C++11 Inherited Constructors if they ever get implemented
+	template<class ... Args> 
+	MissingAttributeException(Args&& ... args) : RollerException(args...) { } 
 };
 
 };
