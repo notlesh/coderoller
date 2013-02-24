@@ -1,12 +1,19 @@
 #include <string.h>
 
+#include "core/log.h"
+
 #include "cr_util.h"
+
+using namespace roller;
 
 namespace cr {
 
 DataType toDataType( const char* str ) {
 
-	if ( strcmp( str, "string" ) == 0 ) {
+	if ( nullptr == str || strcmp( str, "" ) == 0 ) {
+		return DataType::NONE;
+
+	} else if ( strcmp( str, "string" ) == 0 ) {
 		return DataType::STRING;
 
 	} else if ( strcmp( str, "i8 " ) == 0 ) {
@@ -40,20 +47,47 @@ DataType toDataType( const char* str ) {
 		return DataType::F64;
 
 	} else {
-		throw RollerException( "Unrecognized data type" );
+		throw RollerException( "Unrecognized DataType string" );
 	}
 }
 
 // toLanguage
 Language toLanguage( const char* str ) {
 
-	if ( (strcmp( str, "C++" ) == 0) || (strcmp( str, "CPP" ) == 0) ) {
+
+	if ( nullptr == str || strcmp( str, "" ) == 0 ) {
+		return Language::NONE;
+
+	} else if ( (strcmp( str, "C++" ) == 0) || (strcmp( str, "CPP" ) == 0) ) {
 
 		return Language::CPP;
 
 	} else {
 
-		throw RollerException( "Unrecognized language" );
+		throw RollerException( "Unrecognized Language string" );
+	}
+
+}
+
+// toAccessPrivacy
+AccessPrivacy toAccessPrivacy( const char* str ) {
+
+	Log::i( "toAccessPrivacy( %s )", str );
+
+	if ( nullptr == str || strcmp( str, "" ) == 0 ) {
+		return AccessPrivacy::NONE;
+
+	} else if ( strcmp( str, "private" ) == 0 ) {
+		return AccessPrivacy::PRIVATE;
+
+	} else if ( strcmp( str, "protected" ) == 0 ) {
+		return AccessPrivacy::PROTECTED;
+
+	} else if ( strcmp( str, "public" ) == 0 ) {
+		return AccessPrivacy::PUBLIC;
+
+	} else {
+		throw RollerException( "Unrecognized AccessPrivacy string" );
 	}
 
 }

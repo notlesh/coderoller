@@ -11,6 +11,16 @@ using namespace roller;
 
 namespace cr {
 
+/**
+ * Access Privacy
+ */
+enum class AccessPrivacy {
+	NONE = 0,
+	PRIVATE,
+	PROTECTED,
+	PUBLIC
+};
+
 /** 
  * Enum representing basic data types.
  */

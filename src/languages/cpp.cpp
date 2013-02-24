@@ -39,15 +39,19 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 		// print out "class Foo {"
 		out << "class " << c._name << " {" << endl;
 		out << endl;
-		out << "public:" << endl;
-		out << endl;
 
 		for ( Field f : c._fields ) {
+
+			AccessPrivacy privacy = resolvePrivacy( config->_package, c, f );
+			if ( privacy == AccessPrivacy::NONE ) {
+				throw MissingAttributeException( "Must specify a root level defaultMemberPrivacy, a class defaultMemberPrivacy, or a field memberPrivacy setting" );
+			}
 
 			Log::i( "Processing field %s", f._name.c_str() );
 
 			// print out variable declaration
-			out << "\t" << getDataTypeName( f._dataType ) << " _" << f._name << ";" << endl;
+			// TODO: need to group by access first, then build later
+			out << "\t" << getPrivacyName( privacy ) << ": " << getDataTypeName( f._dataType ) << " _" << f._name << ";" << endl;
 		}
 
 		// close class
@@ -105,7 +109,39 @@ const char* CPPGenerator::getDataTypeName( DataType type ) {
 
 	}
 
+}
 
+// getPrivacyName
+const char* CPPGenerator::getPrivacyName( AccessPrivacy privacy ) {
+
+	switch ( privacy ) {
+
+		case AccessPrivacy::NONE:
+			return "";
+
+		case AccessPrivacy::PRIVATE:
+			return "private";
+
+		case AccessPrivacy::PROTECTED:
+			return "protected";
+
+		case AccessPrivacy::PUBLIC:
+			return "public";
+	}
+}
+
+// resolvePrivacy
+AccessPrivacy CPPGenerator::resolvePrivacy( const Package& p, const Class& c, const Field& f ) {
+
+	if ( f._memberPrivacy != AccessPrivacy::NONE ) {
+		return f._memberPrivacy;
+
+	} else if ( c._defaultMemberPrivacy != AccessPrivacy::NONE ) {
+		return c._defaultMemberPrivacy;
+
+	} else {
+		return p._defaultMemberPrivacy;
+	}
 }
 
 };

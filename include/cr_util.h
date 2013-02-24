@@ -15,6 +15,11 @@ DataType toDataType( const char* str );
  */
 Language toLanguage( const char* str );
 
+/**
+ * Returns the AccessPrivacy from the given input
+ */
+AccessPrivacy toAccessPrivacy( const char* str );
+
 };
 
 #endif

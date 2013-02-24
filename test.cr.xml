@@ -1,14 +1,18 @@
-<CodeRoller languages="CPP">
+<CodeRoller languages="CPP" defaultMemberPrivacy="private">
 
-	<class name="Test1">
-		<field type="ui8" name="shortInt" />
-		<field type="ui64" name="longInt" />
-		<field type="string" name="foo" />
-	</class>
+	<!-- TemperatureReading type -->
+	<class name="TemperatureReading">
 
-	<class name="Test2">
-		<field type="f64" name="argle" />
-		<field type="f32" name="bargle" />
+		<field 
+			name="temp" 
+			type="f32"
+			default=".0"
+			memberPrivacy="public" />
+
+		<field 
+			name="time" 
+			type="i64"
+			default="0" />
 	</class>
 
 </CodeRoller>

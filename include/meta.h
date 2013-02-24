@@ -20,6 +20,7 @@ namespace cr {
 struct Field {
 
 	string _name;
+	AccessPrivacy _memberPrivacy;
 	DataType _dataType;
 	string _defaultValue;
 
@@ -31,6 +32,7 @@ struct Field {
 struct Class {
 
 	string _name;
+	AccessPrivacy _defaultMemberPrivacy;
 	list<Field> _fields;
 
 };
@@ -39,6 +41,7 @@ struct Class {
  * A package contains a list of classes to be generated.
  */
 struct Package {
+	AccessPrivacy _defaultMemberPrivacy;
 	list<Class> _classes;
 };
 

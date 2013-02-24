@@ -19,6 +19,8 @@ using namespace roller;
 #define NAME_ATTRIBUTE_NAME "name"
 #define TYPE_ATTRIBUTE_NAME "type"
 #define LANGUAGES_ATTRIBUTE_NAME "languages"
+#define DEFAULT_PRIVACY_ATTRIBUTE_NAME "defaultMemberPrivacy"
+#define PRIVACY_ATTRIBUTE_NAME "memberPrivacy"
 
 namespace cr {
 
@@ -63,6 +65,10 @@ shared_ptr<GenConfig> parseXML( const char* filename ) {
 		}
 	}
 
+	// defaultMemberPrivacy
+	const char* defaultMemberPrivacyStr = root->Attribute( DEFAULT_PRIVACY_ATTRIBUTE_NAME );
+	config->_package._defaultMemberPrivacy = toAccessPrivacy( defaultMemberPrivacyStr );
+
 	// parse class nodes
 	XMLElement* classNode = root->FirstChildElement( CLASS_NODE_NAME );
 	while ( classNode ) {
@@ -73,6 +79,10 @@ shared_ptr<GenConfig> parseXML( const char* filename ) {
 			throw MissingAttributeException( "Class declaration does not contain a name" );
 		}
 		c._name = className;
+
+		// defaultMemberPrivacy
+		defaultMemberPrivacyStr = classNode->Attribute( DEFAULT_PRIVACY_ATTRIBUTE_NAME );
+		c._defaultMemberPrivacy = toAccessPrivacy( defaultMemberPrivacyStr );
 
 		// parse field nodes
 		XMLElement* fieldNode = classNode->FirstChildElement( FIELD_NODE_NAME );
@@ -96,6 +106,10 @@ shared_ptr<GenConfig> parseXML( const char* filename ) {
 				Log::w( "Exception caught while parsing class %s. Rethrowing.", className );
 				throw;
 			}
+
+			// memberPrivacy
+			const char* memberPrivacyStr = fieldNode->Attribute( PRIVACY_ATTRIBUTE_NAME );
+			f._memberPrivacy = toAccessPrivacy( memberPrivacyStr );
 
 			Log::i( "Adding field %s", f._name.c_str() );
 			c._fields.push_back( f );
