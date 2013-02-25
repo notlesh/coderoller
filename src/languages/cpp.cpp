@@ -37,17 +37,20 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 
 	for ( Class c : config->_package._classes ) {
 
-		char hFilename[128]; snprintf( hFilename, 128, "include/%s.gen.h", c._name.c_str() );
-		char cppFilename[128]; snprintf( cppFilename, 128, "src/%s.gen.cpp", c._name.c_str() );
+		char hFilename[128]; snprintf( hFilename, 128, "%s.gen.h", c._name.c_str() );
+		char cppFilename[128]; snprintf( cppFilename, 128, "%s.gen.cpp", c._name.c_str() );
+
+		File includeDir = string("include/");
+		File srcDir = string("src/");
 
 		// make sure we can create files (and their parents)
-		File hOutputFile( config->_outputDir, hFilename );
+		File hOutputFile( config->_outputDir, File( includeDir, hFilename ) );
 		File hOutputFileParent = hOutputFile.getDir();
 		if ( ! hOutputFileParent.exists() ) {
 			hOutputFileParent.mkdir( true );
 		}
 
-		File cppOutputFile( config->_outputDir, cppFilename );
+		File cppOutputFile( config->_outputDir, File( srcDir, cppFilename ) );
 		File cppOutputFileParent = cppOutputFile.getDir();
 		if ( ! cppOutputFileParent.exists() ) {
 			cppOutputFileParent.mkdir( true );
@@ -62,6 +65,12 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 		writeStartIfdefs( hOutStream, c );
 		hOutStream << endl;
 
+		writeHHeaderInclude( hOutStream );
+		hOutStream << endl;
+
+		writeHUsingDeclarations( hOutStream );
+		hOutStream << endl;
+
 		writeHashDef( hOutStream, c );
 		hOutStream << endl;
 
@@ -71,6 +80,9 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 
 		// write header to cppOutStream
 		writeCPPHeaderInclude( cppOutStream, hFilename );
+		cppOutStream << endl;
+
+		writeCPPUsingDeclarations( cppOutStream );
 		cppOutStream << endl;
 
 		list<Field> publicFields;
@@ -190,6 +202,25 @@ void CPPGenerator::writeStartIfdefs( ostream& stream, const Class& c ) {
 // writeCPPHeaderInclude
 void CPPGenerator::writeCPPHeaderInclude( ostream& cppStream, const char* headerFilename ) {
 	cppStream	<< "#include \"" << headerFilename << "\"" << endl;
+}
+
+// writeCPPUsingDeclarations
+void CPPGenerator::writeCPPUsingDeclarations( ostream& cppStream ) {
+	cppStream	<< "using namespace roller;" << endl
+				<< "using std::string;" << endl;
+}
+
+// writeHHeaderInclude
+void CPPGenerator::writeHHeaderInclude( ostream& hStream ) {
+	hStream		<< "#include <string>" << endl
+				<< endl
+				<< "#include \"core/types.h\"" << endl;
+}
+
+// writeHUsingDeclarations
+void CPPGenerator::writeHUsingDeclarations( ostream& hStream ) {
+	hStream		<< "using namespace roller;" << endl
+				<< "using std::string;" << endl;
 }
 
 // writeHashDef

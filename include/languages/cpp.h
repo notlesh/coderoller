@@ -65,6 +65,21 @@ private:
 	 */
 	void writeCPPHeaderInclude( ostream& cppStream, const char* headerFilename );
 
+	/**
+	 * Write CPP using declarations
+	 */
+	void writeCPPUsingDeclarations( ostream& cppStream );
+
+	/**
+	 * Write H Header includes
+	 */
+	void writeHHeaderInclude( ostream& hStream );
+
+	/**
+	 * Write H using declarations
+	 */
+	void writeHUsingDeclarations( ostream& hStream );
+
 	/** 
 	 * Write the hash def
 	 */
