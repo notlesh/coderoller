@@ -1,7 +1,7 @@
-<CodeRoller languages="CPP" defaultMemberPrivacy="private">
+<CodeRoller languages="CPP" defaultMemberPrivacy="private" defaultSerializable="true">
 
 	<!-- TemperatureReading type -->
-	<class name="TemperatureReading">
+	<class name="TemperatureReading" serializable="false">
 
 		<field 
 			name="temp" 

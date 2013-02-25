@@ -8,6 +8,7 @@
 #include "cr_constants.h"
 #include "cr_globals.h"
 #include "generate.h"
+#include "parse/parse.h"
 
 using namespace roller;
 using namespace cr;

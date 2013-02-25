@@ -21,10 +21,13 @@ release:LIBS += -L../roller/release/ -lroller \
 
 SOURCES = $$files(src/*.cpp) \
 		$$files(src/languages/*.cpp) \
+		$$files(src/parse/*.cpp) \
 		tinyxml2/tinyxml2.cpp \
 
 HEADERS = $$files(include/*.h) \
 		$$files(include/languages/*.h) \
+		$$files(include/parse/*.h) \
+		$$files(include/base/*.h) \
 		tinyxml2/tinyxml2.h \
  
 release:DESTDIR = release
