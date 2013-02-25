@@ -52,10 +52,21 @@ public:
 
 private:
 
-	i64 _hashPosition; // TODO: this should be done per class (per file...)
+	i64 _hashPosition1; // TODO: this should be done per class (per file...)
+	i64 _hashPosition2; // TODO: this should be done per class (per file...)
 
 	/** 
 	 * Write a field
+	 */
+	void writeStartIfdefs( ostream& stream, const Class& c );
+
+	/** 
+	 * Write the hash def
+	 */
+	void writeHashDef( ostream& stream, const Class& c );
+
+	/** 
+	 * Write the main header
 	 */
 	void writeMainHeader( ostream& stream );
 
@@ -63,6 +74,16 @@ private:
 	 * Write a field
 	 */
 	void writeField( ostream& stream, const Field& f );
+
+	/**
+	 * Write end ifdefs
+	 */
+	void writeEndIfdefs( ostream& stream, const Class& c );
+
+	/**
+	 * Substitute the hash code at the given position
+	 */
+	void substituteHash( i32 hash, ostream& stream, i64 streamPos );
 };
 
 /**

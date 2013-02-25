@@ -23,7 +23,8 @@ namespace cr {
 
 // Constructor
 CPPGenerator::CPPGenerator() :
-				_hashPosition(-1) {
+				_hashPosition1(-1),
+				_hashPosition2(-1) {
 }
 
 // Destructor
@@ -35,9 +36,18 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 
 	for ( Class c : config->_package._classes ) {
 
+		char filename[128]; snprintf( filename, 128, "%s.gen.h", c._name.c_str() );
+
 		ostringstream outBufferStream;
 
 		writeMainHeader( outBufferStream );
+		outBufferStream << endl;
+
+		writeStartIfdefs( outBufferStream, c );
+		outBufferStream << endl;
+
+		writeHashDef( outBufferStream, c );
+		outBufferStream << endl;
 
 		// print out "class Foo {"
 		outBufferStream << "class " << c._name << " {" << endl;
@@ -112,22 +122,17 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 		outBufferStream << "};" << endl;
 		outBufferStream << endl;
 
+		writeEndIfdefs( outBufferStream, c );
+
 		// take hash of the entire buffer, then go back and fill in hash
 		// TODO: this involves at least one big copy...
 		// NOTE: this needs to be updated if the "class Foo..." and the hash move with respect to each other (etc)
-		i32 hashCode = hash( outBufferStream.str().c_str() + _hashPosition + sizeof( "00000000\n */") );
+		i32 hashCode = hash( outBufferStream.str().c_str() + _hashPosition2 + sizeof( "00000000\n */") );
 		// Log::i( "class text starts with: %s", outBufferStream.str().c_str() + _hashPosition + sizeof( "00000000\n */") );
 
-		outBufferStream.seekp( _hashPosition, std::ios_base::beg );
+		substituteHash( hashCode, outBufferStream, _hashPosition1 );
+		substituteHash( hashCode, outBufferStream, _hashPosition2 );
 
-		// print in hex
-		outBufferStream << std::hex << hashCode;
-		outBufferStream << std::dec;
-
-		// seek back to end
-		outBufferStream.seekp( 0, std::ios_base::end );
-
-		char filename[128]; snprintf( filename, 128, "%s.gen.h", c._name.c_str() );
 		File outputFile( config->_outputDir, filename );
 		ofstream outFileStream( outputFile.getFullPath() );
 		outFileStream << outBufferStream.str();
@@ -135,6 +140,19 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 		outFileStream.close();
 
 	}
+}
+
+// writeStartIfdefs
+void CPPGenerator::writeStartIfdefs( ostream& stream, const Class& c ) {
+	stream	<< "#ifndef __CR_GEN_" << c._name << "_H_" << endl
+			<< "#define __CR_GEN_" << c._name << "_H_" << endl;
+}
+
+// writeHashDef
+void CPPGenerator::writeHashDef( ostream& stream, const Class& c ) {
+	stream	<< "#define __CR_HASH_" << c._name << " 0x00000000";
+	_hashPosition1 = (i64)stream.tellp() - 8;
+	stream	<< endl;
 }
 
 // writeMainHeader
@@ -150,7 +168,7 @@ void CPPGenerator::writeMainHeader( ostream& stream ) {
 			<< " * Class hash: 00000000";
 	
 	// grab position here; we will return to it to overwrite class hash once we can compute it.
-	_hashPosition = (i64)stream.tellp() - 8;
+	_hashPosition2 = (i64)stream.tellp() - 8;
 
 	// finish writing header
 
@@ -161,6 +179,26 @@ void CPPGenerator::writeMainHeader( ostream& stream ) {
 // writeField
 void CPPGenerator::writeField( ostream& stream, const Field& f ) {
 	stream << "\t" << getDataTypeName( f._dataType ) << " _" << f._name << ";" << endl;
+}
+
+// writeEndIfdefs
+void CPPGenerator::writeEndIfdefs( ostream& stream, const Class& c ) {
+	stream	<< "#endif // __CR_GEN_" << c._name << "_H_" << endl;
+
+}
+
+// substituteHash
+void CPPGenerator::substituteHash( i32 hash, ostream& stream, i64 streamPos ) {
+
+	stream.seekp( streamPos, std::ios_base::beg );
+
+	// print in hex
+	stream << std::hex << hash;
+	stream << std::dec;
+
+	// seek back to end
+	stream.seekp( 0, std::ios_base::end );
+
 }
 
 // getDataTypeName
