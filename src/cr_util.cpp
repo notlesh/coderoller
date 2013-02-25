@@ -92,4 +92,8 @@ AccessPrivacy toAccessPrivacy( const char* str ) {
 
 }
 
+// capitalize
+char capitalize( char c ) {
+	return c - (97 - 65);
+}
 };

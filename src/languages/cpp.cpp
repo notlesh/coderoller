@@ -10,6 +10,7 @@
 #include "core/util.h"
 
 #include "cr_constants.h"
+#include "cr_util.h"
 
 using namespace roller;
 using std::unique_ptr;
@@ -36,22 +37,24 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 
 	for ( Class c : config->_package._classes ) {
 
-		char filename[128]; snprintf( filename, 128, "%s.gen.h", c._name.c_str() );
+		char hFilename[128]; snprintf( hFilename, 128, "%s.gen.h", c._name.c_str() );
+		char cppFilename[128]; snprintf( cppFilename, 128, "%s.gen.cpp", c._name.c_str() );
 
-		ostringstream outBufferStream;
+		ostringstream hOutStream;
+		ostringstream cppOutStream;
 
-		writeMainHeader( outBufferStream );
-		outBufferStream << endl;
+		writeMainHeader( hOutStream );
+		hOutStream << endl;
 
-		writeStartIfdefs( outBufferStream, c );
-		outBufferStream << endl;
+		writeStartIfdefs( hOutStream, c );
+		hOutStream << endl;
 
-		writeHashDef( outBufferStream, c );
-		outBufferStream << endl;
+		writeHashDef( hOutStream, c );
+		hOutStream << endl;
 
 		// print out "class Foo {"
-		outBufferStream << "class " << c._name << " {" << endl;
-		outBufferStream << endl;
+		hOutStream << "class " << c._name << " {" << endl;
+		hOutStream << endl;
 
 		list<Field> publicFields;
 		list<Field> protectedFields;
@@ -84,60 +87,81 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 		// add fields by type
 		if ( publicFields.size() > 0 ) {
 			
-			outBufferStream << "public:" << endl;
-			outBufferStream << endl;
+			hOutStream << "public:" << endl;
+			hOutStream << endl;
 
 			for ( Field f : publicFields ) {
-				writeField( outBufferStream, f );
+				writeField( hOutStream, f );
 			}
 
-			outBufferStream << endl;
+			hOutStream << endl;
+
+			// while we're in public, write out accessors
+			for ( Field f : publicFields ) {
+				writeFieldAccessors( hOutStream, cppOutStream, c, f );
+				hOutStream << endl;
+			}
+			for ( Field f : protectedFields ) {
+				writeFieldAccessors( hOutStream, cppOutStream, c, f );
+				hOutStream << endl;
+			}
+			for ( Field f : privateFields ) {
+				writeFieldAccessors( hOutStream, cppOutStream, c, f );
+				hOutStream << endl;
+			}
+
+			hOutStream << endl;
 		}
 
 		if ( protectedFields.size() > 0 ) {
 			
-			outBufferStream << "protected:" << endl;
-			outBufferStream << endl;
+			hOutStream << "protected:" << endl;
+			hOutStream << endl;
 
 			for ( Field f : protectedFields ) {
-				writeField( outBufferStream, f );
+				writeField( hOutStream, f );
 			}
 
-			outBufferStream << endl;
+			hOutStream << endl;
 		}
 
 		if ( privateFields.size() > 0 ) {
 			
-			outBufferStream << "private:" << endl;
-			outBufferStream << endl;
+			hOutStream << "private:" << endl;
+			hOutStream << endl;
 
 			for ( Field f : privateFields ) {
-				writeField( outBufferStream, f );
+				writeField( hOutStream, f );
 			}
 
-			outBufferStream << endl;
+			hOutStream << endl;
 		}
 
 		// close class
-		outBufferStream << "};" << endl;
-		outBufferStream << endl;
+		hOutStream << "};" << endl;
+		hOutStream << endl;
 
-		writeEndIfdefs( outBufferStream, c );
+		writeEndIfdefs( hOutStream, c );
 
 		// take hash of the entire buffer, then go back and fill in hash
 		// TODO: this involves at least one big copy...
 		// NOTE: this needs to be updated if the "class Foo..." and the hash move with respect to each other (etc)
-		i32 hashCode = hash( outBufferStream.str().c_str() + _hashPosition2 + sizeof( "00000000\n */") );
-		// Log::i( "class text starts with: %s", outBufferStream.str().c_str() + _hashPosition + sizeof( "00000000\n */") );
+		i32 hashCode = hash( hOutStream.str().c_str() + _hashPosition2 + sizeof( "00000000\n */") );
+		// Log::i( "class text starts with: %s", hOutStream.str().c_str() + _hashPosition + sizeof( "00000000\n */") );
 
-		substituteHash( hashCode, outBufferStream, _hashPosition1 );
-		substituteHash( hashCode, outBufferStream, _hashPosition2 );
+		substituteHash( hashCode, hOutStream, _hashPosition1 );
+		substituteHash( hashCode, hOutStream, _hashPosition2 );
 
-		File outputFile( config->_outputDir, filename );
-		ofstream outFileStream( outputFile.getFullPath() );
-		outFileStream << outBufferStream.str();
+		File hOutputFile( config->_outputDir, hFilename );
+		ofstream hOutFileStream( hOutputFile.getFullPath() );
+		hOutFileStream << hOutStream.str();
+		hOutFileStream.close();
 
-		outFileStream.close();
+		File cppOutputFile( config->_outputDir, cppFilename );
+		ofstream cppOutFileStream( cppOutputFile.getFullPath() );
+		cppOutFileStream << cppOutStream.str();
+		cppOutFileStream.close();
+
 
 	}
 }
@@ -174,6 +198,32 @@ void CPPGenerator::writeMainHeader( ostream& stream ) {
 
 	stream	<< endl
 			<< " */" << endl;
+}
+
+// writeFieldAccessors
+void CPPGenerator::writeFieldAccessors( ostream& hStream, ostream& cppStream, const Class& c, const Field& f ) {
+
+	string capitalized;
+	capitalized += capitalize( f._name[0] );
+	capitalized += (f._name.c_str() + 1);
+
+	string typeName = getDataTypeName( f._dataType );
+
+	hStream << "\t" << typeName << " get" << capitalized << "();" << endl;
+	hStream << "\tvoid" << " set" << capitalized << "( " << typeName << " value );" << endl;
+
+	// getter
+	cppStream << typeName << " " << c._name << "::" << "get" << capitalized << "() {" << endl;
+	cppStream << "\treturn _" << f._name << ";" << endl;
+	cppStream << "}" << endl;
+	cppStream << endl;
+
+	// setter
+	cppStream << "void " << c._name << "::" << "set" << capitalized << "( " << typeName << " value ) {" << endl;
+	cppStream << "\t_" << f._name << " = value;" << endl;
+	cppStream << "}" << endl;
+	cppStream << endl;
+
 }
 
 // writeField

@@ -75,6 +75,11 @@ private:
 	 */
 	void writeField( ostream& stream, const Field& f );
 
+	/** 
+	 * Write a field accessors
+	 */
+	void writeFieldAccessors( ostream& hStream, ostream& cppStream, const Class& c, const Field& f );
+
 	/**
 	 * Write end ifdefs
 	 */

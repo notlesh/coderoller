@@ -20,6 +20,11 @@ Language toLanguage( const char* str );
  */
 AccessPrivacy toAccessPrivacy( const char* str );
 
+/**
+ * Capitalize a letter
+ */
+char capitalize( char c );
+
 };
 
 #endif
