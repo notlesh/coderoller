@@ -209,11 +209,11 @@ void CPPGenerator::writeFieldAccessors( ostream& hStream, ostream& cppStream, co
 
 	string typeName = getDataTypeName( f._dataType );
 
-	hStream << "\t" << typeName << " get" << capitalized << "();" << endl;
+	hStream << "\t" << typeName << " get" << capitalized << "() const;" << endl;
 	hStream << "\tvoid" << " set" << capitalized << "( " << typeName << " value );" << endl;
 
 	// getter
-	cppStream << typeName << " " << c._name << "::" << "get" << capitalized << "() {" << endl;
+	cppStream << typeName << " " << c._name << "::" << "get" << capitalized << "() const {" << endl;
 	cppStream << "\treturn _" << f._name << ";" << endl;
 	cppStream << "}" << endl;
 	cppStream << endl;
