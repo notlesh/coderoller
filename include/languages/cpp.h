@@ -60,6 +60,11 @@ private:
 	 */
 	void writeStartIfdefs( ostream& stream, const Class& c );
 
+	/**
+	 * writeCPPHeaderInclude
+	 */
+	void writeCPPHeaderInclude( ostream& cppStream, const char* headerFilename );
+
 	/** 
 	 * Write the hash def
 	 */

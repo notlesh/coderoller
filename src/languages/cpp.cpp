@@ -37,8 +37,21 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 
 	for ( Class c : config->_package._classes ) {
 
-		char hFilename[128]; snprintf( hFilename, 128, "%s.gen.h", c._name.c_str() );
-		char cppFilename[128]; snprintf( cppFilename, 128, "%s.gen.cpp", c._name.c_str() );
+		char hFilename[128]; snprintf( hFilename, 128, "include/%s.gen.h", c._name.c_str() );
+		char cppFilename[128]; snprintf( cppFilename, 128, "src/%s.gen.cpp", c._name.c_str() );
+
+		// make sure we can create files (and their parents)
+		File hOutputFile( config->_outputDir, hFilename );
+		File hOutputFileParent = hOutputFile.getDir();
+		if ( ! hOutputFileParent.exists() ) {
+			hOutputFileParent.mkdir( true );
+		}
+
+		File cppOutputFile( config->_outputDir, cppFilename );
+		File cppOutputFileParent = cppOutputFile.getDir();
+		if ( ! cppOutputFileParent.exists() ) {
+			cppOutputFileParent.mkdir( true );
+		}
 
 		ostringstream hOutStream;
 		ostringstream cppOutStream;
@@ -55,6 +68,10 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 		// print out "class Foo {"
 		hOutStream << "class " << c._name << " {" << endl;
 		hOutStream << endl;
+
+		// write header to cppOutStream
+		writeCPPHeaderInclude( cppOutStream, hFilename );
+		cppOutStream << endl;
 
 		list<Field> publicFields;
 		list<Field> protectedFields;
@@ -152,12 +169,10 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 		substituteHash( hashCode, hOutStream, _hashPosition1 );
 		substituteHash( hashCode, hOutStream, _hashPosition2 );
 
-		File hOutputFile( config->_outputDir, hFilename );
 		ofstream hOutFileStream( hOutputFile.getFullPath() );
 		hOutFileStream << hOutStream.str();
 		hOutFileStream.close();
 
-		File cppOutputFile( config->_outputDir, cppFilename );
 		ofstream cppOutFileStream( cppOutputFile.getFullPath() );
 		cppOutFileStream << cppOutStream.str();
 		cppOutFileStream.close();
@@ -170,6 +185,11 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 void CPPGenerator::writeStartIfdefs( ostream& stream, const Class& c ) {
 	stream	<< "#ifndef __CR_GEN_" << c._name << "_H_" << endl
 			<< "#define __CR_GEN_" << c._name << "_H_" << endl;
+}
+
+// writeCPPHeaderInclude
+void CPPGenerator::writeCPPHeaderInclude( ostream& cppStream, const char* headerFilename ) {
+	cppStream	<< "#include \"" << headerFilename << "\"" << endl;
 }
 
 // writeHashDef
