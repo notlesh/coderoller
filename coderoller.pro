@@ -1,6 +1,11 @@
 CONFIG += debug thread 
 QMAKE_CXXFLAGS += -std=c++0x -frtti
 
+# get some useful git defines
+GIT_HASH = $$system( git rev-parse HEAD )
+GIT_BRANCH = $$system( git rev-parse --abbrev-ref HEAD )
+DEFINES += GIT_HASH=\\\"$$GIT_HASH\\\" GIT_BRANCH=\\\"$$GIT_BRANCH\\\"
+
 # this will force the makefile to use colorgcc, a wrapper around gcc that colorizes content.
 # install on ubuntu with "sudo apt-get install colorgcc"
 # or comment out to use straight gcc.

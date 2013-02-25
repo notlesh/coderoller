@@ -15,4 +15,31 @@
 			default="0" />
 	</class>
 
+	<class name="Foo">
+
+		<field 
+			name="a1" 
+			type="f32"
+			default="0.0"
+			memberPrivacy="public" />
+
+		<field 
+			name="a2" 
+			type="ui8"
+			default="0"
+			memberPrivacy="public" />
+
+		<field 
+			name="a3" 
+			type="ui16"
+			default="0"
+			memberPrivacy="public" />
+
+		<field 
+			name="name" 
+			type="string"
+			default=":)"
+			memberPrivacy="private" />
+	</class>
+
 </CodeRoller>

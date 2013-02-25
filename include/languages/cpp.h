@@ -2,12 +2,14 @@
 #define __CR_CPP_H_
 
 #include <memory>
+#include <iostream>
 
 #include "languages/generator.h"
 #include "cr_constants.h"
 #include "meta.h"
 
 using std::shared_ptr;
+using std::ostream;
 
 namespace cr {
 
@@ -47,6 +49,20 @@ public:
 	 * Return the C++ access specifier for the given AccessPrivacy
 	 */
 	static AccessPrivacy resolvePrivacy( const Package& p, const Class& c, const Field& f );
+
+private:
+
+	i64 _hashPosition; // TODO: this should be done per class (per file...)
+
+	/** 
+	 * Write a field
+	 */
+	void writeMainHeader( ostream& stream );
+
+	/** 
+	 * Write a field
+	 */
+	void writeField( ostream& stream, const Field& f );
 };
 
 /**
