@@ -46,6 +46,15 @@ enum class Language {
 	CPP
 };
 
+/**
+ * Enum representing serialization options (yes, no, unspecified)
+ */
+enum class SerializableSpecification {
+	NONE = 0,
+	YES,
+	NO
+};
+
 /** 
  * InvalidNodeNameException
  */

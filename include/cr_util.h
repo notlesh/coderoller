@@ -21,6 +21,11 @@ Language toLanguage( const char* str );
 AccessPrivacy toAccessPrivacy( const char* str );
 
 /**
+ * Returns the SerializableSpecification from the given input
+ */
+SerializableSpecification toSerializableSpecification( const char* str );
+
+/**
  * Capitalize a letter
  */
 char capitalize( char c );

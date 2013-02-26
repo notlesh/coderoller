@@ -92,6 +92,19 @@ AccessPrivacy toAccessPrivacy( const char* str ) {
 
 }
 
+// toSerializableSpecification
+SerializableSpecification toSerializableSpecification( const char* str ) {
+	if ( str == nullptr || str[0] == 0x00 ) {
+		return SerializableSpecification::NONE;
+	} else if ( (strcmp( str, "yes" ) == 0 ) || (strcmp( str, "true" )) ) {
+		return SerializableSpecification::YES;
+	} else if ( (strcmp( str, "no" ) == 0 ) || (strcmp( str, "false" )) ) {
+		return SerializableSpecification::NO;
+	} else {
+		return SerializableSpecification::NONE;
+	}
+}
+
 // capitalize
 char capitalize( char c ) {
 	return c - (97 - 65);

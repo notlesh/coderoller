@@ -23,7 +23,7 @@ struct Field {
 	AccessPrivacy _memberPrivacy;
 	DataType _dataType;
 	string _defaultValue;
-	bool _serializable;
+	SerializableSpecification _serializable;
 
 };
 
@@ -35,7 +35,7 @@ struct Class {
 	string _name;
 	AccessPrivacy _defaultMemberPrivacy;
 	list<Field> _fields;
-	bool _serializable;
+	SerializableSpecification _serializable;
 
 };
 
@@ -45,7 +45,7 @@ struct Class {
 struct Package {
 	AccessPrivacy _defaultMemberPrivacy;
 	list<Class> _classes;
-	bool _defaultSerializable;
+	SerializableSpecification _defaultSerializable;
 };
 
 /**

@@ -21,6 +21,8 @@ using namespace roller;
 #define LANGUAGES_ATTRIBUTE_NAME "languages"
 #define DEFAULT_PRIVACY_ATTRIBUTE_NAME "defaultMemberPrivacy"
 #define PRIVACY_ATTRIBUTE_NAME "memberPrivacy"
+#define DEFAULT_SERIALIZABLE_ATTRIBUTE_NAME "defaultSerializable"
+#define SERIALIZABLE_ATTRIBUTE_NAME "serializable"
 
 namespace cr {
 
@@ -68,6 +70,10 @@ shared_ptr<GenConfig> parseXML( const char* filename ) {
 	// defaultMemberPrivacy
 	const char* defaultMemberPrivacyStr = root->Attribute( DEFAULT_PRIVACY_ATTRIBUTE_NAME );
 	config->_package._defaultMemberPrivacy = toAccessPrivacy( defaultMemberPrivacyStr );
+
+	// defaultSerializable
+	const char* defaultSerializableStr = root->Attribute( DEFAULT_SERIALIZABLE_ATTRIBUTE_NAME );
+	config->_package._defaultSerializable = cr::toSerializableSpecification( defaultMemberPrivacyStr );
 
 	// parse class nodes
 	XMLElement* classElement = root->FirstChildElement( CLASS_NODE_NAME );

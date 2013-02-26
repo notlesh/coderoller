@@ -13,6 +13,7 @@ QMAKE_CXX = colorgcc
 
 INCLUDEPATH += include/ \
 		../roller/include \
+		test/test_output/include/ \
 		./tinyxml2/ \
 
 debug:LIBS += -L../roller/debug/ -lroller \
@@ -22,6 +23,7 @@ release:LIBS += -L../roller/release/ -lroller \
 SOURCES = $$files(src/*.cpp) \
 		$$files(src/languages/*.cpp) \
 		$$files(src/parse/*.cpp) \
+		$$files(test/test_output/src/*.cpp) \
 		tinyxml2/tinyxml2.cpp \
 
 HEADERS = $$files(include/*.h) \

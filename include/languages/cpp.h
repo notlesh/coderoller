@@ -68,17 +68,17 @@ private:
 	/**
 	 * Write CPP using declarations
 	 */
-	void writeCPPUsingDeclarations( ostream& cppStream );
+	void writeCPPUsingDeclarations( ostream& cppStream, bool classSerializable );
 
 	/**
 	 * Write H Header includes
 	 */
-	void writeHHeaderInclude( ostream& hStream );
+	void writeHHeaderInclude( ostream& hStream, bool classSerializable );
 
 	/**
 	 * Write H using declarations
 	 */
-	void writeHUsingDeclarations( ostream& hStream );
+	void writeHUsingDeclarations( ostream& hStream, bool classSerializable );
 
 	/** 
 	 * Write the hash def
@@ -109,12 +109,43 @@ private:
 	 * Substitute the hash code at the given position
 	 */
 	void substituteHash( i32 hash, ostream& stream, i64 streamPos );
+
+	/**
+	 * Write the serialization function declarations
+	 */
+	void writeSerializationDeclarations( ostream& hStream );
+
+	/**
+	 * Write the serialization function definitions
+	 */
+	void writeSerializationDefinitions( ostream& cppStream, const Class& c, list<Field>& publicFields, list<Field>& protectedFields, list<Field>& privateFields );
+
+	void writeSerialize( ostream& cppStream, const Class& c, list<Field>& publicFields, list<Field>& protectedFields, list<Field>& privateFields );
+	void writeSerializeField( ostream& cppStream, const Field& f );
+
+	void writeGetSerializedSize( ostream& cppStream, const Class& c, list<Field>& publicFields, list<Field>& protectedFields, list<Field>& privateFields );
+	void writeGetSerializedSizeField( ostream& cppStream, const Field& f );
+
+	void writeInternalize( ostream& cppStream, const Class& c, list<Field>& publicFields, list<Field>& protectedFields, list<Field>& privateFields );
+	void writeInternalizeField( ostream& cppStream, const Field& f );
+
+	void writeGetClassHash( ostream& cppStream, const Class& c );
 };
 
 /**
  * Resolve the desired access privacy for the given field
  */
 AccessPrivacy resolvePrivacy( const Package& p, const Class& c, const Field& f );
+
+/**
+ * Resolve the desired serializable for the given class
+ */
+bool resolveClassSerializable( const Package& p, const Class& c );
+
+/**
+ * Resolve the desired serializable for the given field
+ */
+bool resolveFieldSerializable( const Package& p, const Class& c, const Field& f );
 
 };
 

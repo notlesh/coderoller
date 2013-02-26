@@ -37,6 +37,8 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 
 	for ( Class c : config->_package._classes ) {
 
+		bool classSerializable = resolveClassSerializable( config->_package, c );
+
 		char hFilename[128]; snprintf( hFilename, 128, "%s.gen.h", c._name.c_str() );
 		char cppFilename[128]; snprintf( cppFilename, 128, "%s.gen.cpp", c._name.c_str() );
 
@@ -65,24 +67,30 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 		writeStartIfdefs( hOutStream, c );
 		hOutStream << endl;
 
-		writeHHeaderInclude( hOutStream );
+		writeHHeaderInclude( hOutStream, classSerializable );
 		hOutStream << endl;
 
-		writeHUsingDeclarations( hOutStream );
+		writeHUsingDeclarations( hOutStream, classSerializable );
 		hOutStream << endl;
 
 		writeHashDef( hOutStream, c );
 		hOutStream << endl;
 
 		// print out "class Foo {"
-		hOutStream << "class " << c._name << " {" << endl;
-		hOutStream << endl;
+		if ( classSerializable ) {
+			hOutStream << "class " << c._name << " : public Serializable {" << endl;
+			hOutStream << endl;
+
+		} else {
+			hOutStream << "class " << c._name << " {" << endl;
+			hOutStream << endl;
+		}
 
 		// write header to cppOutStream
 		writeCPPHeaderInclude( cppOutStream, hFilename );
 		cppOutStream << endl;
 
-		writeCPPUsingDeclarations( cppOutStream );
+		writeCPPUsingDeclarations( cppOutStream, classSerializable );
 		cppOutStream << endl;
 
 		list<Field> publicFields;
@@ -113,35 +121,47 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 			}
 		}
 
-		// add fields by type
+		hOutStream << "public:" << endl;
+		hOutStream << endl;
+
 		if ( publicFields.size() > 0 ) {
-			
-			hOutStream << "public:" << endl;
-			hOutStream << endl;
 
-			for ( Field f : publicFields ) {
-				writeField( hOutStream, f );
+			if ( publicFields.size() > 0 ) {
+
+				for ( Field f : publicFields ) {
+					writeField( hOutStream, f );
+				}
+
+				hOutStream << endl;
+
+				for ( Field f : publicFields ) {
+					writeFieldAccessors( hOutStream, cppOutStream, c, f );
+					hOutStream << endl;
+				}
 			}
 
-			hOutStream << endl;
+			// while we're in public, write out all accessors
+			if ( protectedFields.size() > 0 ) {
+				for ( Field f : protectedFields ) {
+					writeFieldAccessors( hOutStream, cppOutStream, c, f );
+					hOutStream << endl;
+				}
+			}
+			if ( privateFields.size() > 0 ) {
+				for ( Field f : privateFields ) {
+					writeFieldAccessors( hOutStream, cppOutStream, c, f );
+					hOutStream << endl;
+				}
+			}
 
-			// while we're in public, write out accessors
-			for ( Field f : publicFields ) {
-				writeFieldAccessors( hOutStream, cppOutStream, c, f );
+			// write out serialization declarations
+			if ( classSerializable ) {
+				writeSerializationDeclarations( hOutStream );
 				hOutStream << endl;
 			}
-			for ( Field f : protectedFields ) {
-				writeFieldAccessors( hOutStream, cppOutStream, c, f );
-				hOutStream << endl;
-			}
-			for ( Field f : privateFields ) {
-				writeFieldAccessors( hOutStream, cppOutStream, c, f );
-				hOutStream << endl;
-			}
-
-			hOutStream << endl;
 		}
 
+		// add other fields by access type
 		if ( protectedFields.size() > 0 ) {
 			
 			hOutStream << "protected:" << endl;
@@ -164,6 +184,11 @@ void CPPGenerator::generate( shared_ptr<GenConfig> config ) {
 			}
 
 			hOutStream << endl;
+		}
+
+		// write serialization function definitions
+		if ( classSerializable ) {
+			writeSerializationDefinitions( cppOutStream, c, publicFields, protectedFields, privateFields );
 		}
 
 		// close class
@@ -201,26 +226,37 @@ void CPPGenerator::writeStartIfdefs( ostream& stream, const Class& c ) {
 
 // writeCPPHeaderInclude
 void CPPGenerator::writeCPPHeaderInclude( ostream& cppStream, const char* headerFilename ) {
-	cppStream	<< "#include \"" << headerFilename << "\"" << endl;
+	cppStream << "#include \"" << headerFilename << "\"" << endl;
 }
 
 // writeCPPUsingDeclarations
-void CPPGenerator::writeCPPUsingDeclarations( ostream& cppStream ) {
-	cppStream	<< "using namespace roller;" << endl
-				<< "using std::string;" << endl;
+void CPPGenerator::writeCPPUsingDeclarations( ostream& cppStream, bool classSerializable ) {
+	cppStream << "using namespace roller;" << endl;
+	if ( classSerializable ) {
+		cppStream << "using namespace cr;" << endl;
+	}
+	cppStream << "using std::string;" << endl;
 }
 
 // writeHHeaderInclude
-void CPPGenerator::writeHHeaderInclude( ostream& hStream ) {
+void CPPGenerator::writeHHeaderInclude( ostream& hStream, bool classSerializable ) {
 	hStream		<< "#include <string>" << endl
 				<< endl
 				<< "#include \"core/types.h\"" << endl;
+	if ( classSerializable ) {
+		hStream		<< "#include \"core/serialization.h\"" << endl
+					<< endl
+					<< "#include \"base/serializable.h\"" << endl;
+	}
 }
 
 // writeHUsingDeclarations
-void CPPGenerator::writeHUsingDeclarations( ostream& hStream ) {
-	hStream		<< "using namespace roller;" << endl
-				<< "using std::string;" << endl;
+void CPPGenerator::writeHUsingDeclarations( ostream& hStream, bool classSerializable ) {
+	hStream << "using namespace roller;" << endl;
+	if ( classSerializable ) {
+		hStream << "using namespace cr;" << endl;
+	}
+	hStream << "using std::string;" << endl;
 }
 
 // writeHashDef
@@ -300,6 +336,120 @@ void CPPGenerator::substituteHash( i32 hash, ostream& stream, i64 streamPos ) {
 	// seek back to end
 	stream.seekp( 0, std::ios_base::end );
 
+}
+
+// writeSerializationDeclarations
+void CPPGenerator::writeSerializationDeclarations( ostream& hStream ) {
+	hStream << "\tvirtual i64 serialize( void* buffer ) const;" << endl
+			<< "\tvirtual i64 getSerializedSize() const;" << endl
+			<< "\tvirtual void internalize( void* buffer );" << endl
+			<< "\tvirtual i32 getClassHash() const;" << endl;
+}
+
+// writeSerializationDeclarations
+void CPPGenerator::writeSerializationDefinitions( ostream& cppStream, const Class& c, list<Field>& publicFields, list<Field>& protectedFields, list<Field>& privateFields ) {
+
+	writeSerialize( cppStream, c, publicFields, protectedFields, privateFields );
+	cppStream << endl;
+
+	writeGetSerializedSize( cppStream, c, publicFields, protectedFields, privateFields );
+	cppStream << endl;
+
+	writeInternalize( cppStream, c, publicFields, protectedFields, privateFields );
+	cppStream << endl;
+
+	writeGetClassHash( cppStream, c );
+	cppStream << endl;
+}
+
+// writeSerialize
+void CPPGenerator::writeSerialize( ostream& cppStream, const Class& c, list<Field>& publicFields, list<Field>& protectedFields, list<Field>& privateFields ) {
+
+	cppStream << "i64 " << c._name << "::serialize( void* buffer ) const {" << endl;
+	cppStream << "\ti64 written = 0;" << endl;
+
+	for ( Field f : publicFields ) {
+		writeSerializeField( cppStream, f );
+	}
+	for ( Field f : protectedFields ) {
+		writeSerializeField( cppStream, f );
+	}
+	for ( Field f : privateFields ) {
+		writeSerializeField( cppStream, f );
+	}
+
+	cppStream	<< "\treturn written;" << endl
+				<< "}" << endl;
+}
+
+// writeSerializeField
+void CPPGenerator::writeSerializeField( ostream& cppStream, const Field& f ) {
+	cppStream << "\twritten += Serialization::write( ((char*)buffer + written), _" << f._name << " );" << endl;
+}
+
+// writeGetSerializedSize
+void CPPGenerator::writeGetSerializedSize( ostream& cppStream, const Class& c, list<Field>& publicFields, list<Field>& protectedFields, list<Field>& privateFields ) {
+
+	cppStream	<< "i64 " << c._name << "::getSerializedSize() const {" << endl
+				<< "\ti64 size = 0;" << endl;
+
+	for ( Field f : publicFields ) {
+		writeGetSerializedSizeField( cppStream, f );
+	}
+	for ( Field f : protectedFields ) {
+		writeGetSerializedSizeField( cppStream, f );
+	}
+	for ( Field f : privateFields ) {
+		writeGetSerializedSizeField( cppStream, f );
+	}
+
+	cppStream	<< "\treturn size;" << endl
+				<< "}" << endl;
+}
+
+// writeGetSerializedSizeField
+void CPPGenerator::writeGetSerializedSizeField( ostream& cppStream, const Field& f ) {
+	if ( f._dataType == DataType::STRING ) {
+		cppStream << "\tsize += sizeof( i64 ) + _" << f._name << ".size(); // _" << f._name << endl;
+	} else {
+		cppStream << "\tsize += sizeof( " << getDataTypeName( f._dataType ) << " ); // _" << f._name << endl;
+	}
+}
+
+// writeInternalize
+void CPPGenerator::writeInternalize( ostream& cppStream, const Class& c, list<Field>& publicFields, list<Field>& protectedFields, list<Field>& privateFields ) {
+
+	cppStream << "void " << c._name << "::internalize( void* buffer ) {" << endl;
+	cppStream << "\ti64 read = 0;" << endl;
+
+	for ( Field f : publicFields ) {
+		writeInternalizeField( cppStream, f );
+	}
+	for ( Field f : protectedFields ) {
+		writeInternalizeField( cppStream, f );
+	}
+	for ( Field f : privateFields ) {
+		writeInternalizeField( cppStream, f );
+	}
+
+	cppStream << "}" << endl;
+}
+
+// writeInternalizeField
+void CPPGenerator::writeInternalizeField( ostream& cppStream, const Field& f ) {
+	if ( f._dataType == DataType::STRING ) {
+		cppStream << "\tread += Serialization::read( ((char*)buffer + read), _" << f._name << " );" << endl;
+	} else {
+		cppStream << "\tread += Serialization::read( ((char*)buffer + read), &_" << f._name << " );" << endl;
+	}
+}
+
+// writeGetClassHash
+void CPPGenerator::writeGetClassHash( ostream& cppStream, const Class& c ) {
+
+	cppStream	<< "i32 " << c._name << "::getClassHash() const {" << endl
+				<< "\treturn __CR_HASH_" << c._name << ";" << endl
+				<< "}" << endl;
 }
 
 // getDataTypeName
@@ -383,6 +533,65 @@ AccessPrivacy CPPGenerator::resolvePrivacy( const Package& p, const Class& c, co
 
 	} else {
 		return p._defaultMemberPrivacy;
+	}
+}
+
+// resolveClassSerializable
+bool resolveClassSerializable( const Package& p, const Class& c ) {
+
+	if ( c._serializable == SerializableSpecification::YES ) {
+		return true;
+	} else if ( c._serializable == SerializableSpecification::NO ) {
+		return false;
+	} else if ( p._defaultSerializable == SerializableSpecification::YES ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+// resolveFieldSerializable
+bool resolveFieldSerializable( const Package& p, const Class& c, const Field& f ) {
+
+	if ( c._serializable == SerializableSpecification::NO ) {
+
+		// class explicitly says no (field should not say yes)
+
+		if ( f._serializable == SerializableSpecification::YES ) {
+			throw RollerException( "Field specifiecd as serializable, but class specified as not serializable" );
+		}
+		return false;
+
+	} else if ( c._serializable == SerializableSpecification::NONE 
+			&& p._defaultSerializable != SerializableSpecification::YES ) {
+
+		// class doesn't specify, but package says yes
+
+		if ( f._serializable == SerializableSpecification::NO ) {
+			return false;
+		} else {
+			return true;
+		}
+
+	} else if ( c._serializable == SerializableSpecification::YES ) {
+
+		// class explicitly says yes
+
+		if ( f._serializable == SerializableSpecification::NO ) {
+			return false;
+		} else {
+			return true;
+		}
+
+	} else {
+
+		// nothing specifies yes, so if field specifies yes, we have error, otherwise no serializable.
+
+		if ( f._serializable == SerializableSpecification::YES ) {
+			throw RollerException( "Field specifiecd as serializable, neither class nor package specify serialiazable" );
+		}
+		return false;
+
 	}
 }
 
