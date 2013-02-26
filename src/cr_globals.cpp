@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "cr_constants.h"
-#include "languages/cpp.h"
+#include "languages/cpp/cpp_generator.h"
 
 using std::shared_ptr;
 using std::dynamic_pointer_cast;

@@ -33,6 +33,13 @@ shared_ptr<GenConfig> parseXML( const char* filename ) {
 
 	shared_ptr<GenConfig> config( new GenConfig() );
 
+	File configFile( filename );
+	if ( ! configFile.exists() ) {
+		throw RollerException( "Config file %s does not exist", filename );
+	}
+
+	config->_mTime = configFile.getMTime();
+
 	XMLDocument doc;
 	doc.LoadFile( filename );
 

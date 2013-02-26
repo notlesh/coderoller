@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 
+#include "core/types.h"
 #include "core/file.h"
 
 #include "cr_constants.h"
@@ -56,6 +57,7 @@ struct GenConfig {
 	Package _package;
 	list<Language> _languages;
 	File _outputDir;
+	ui64 _mTime;
 };
 
 };
