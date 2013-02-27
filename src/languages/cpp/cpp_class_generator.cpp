@@ -129,41 +129,39 @@ void CPPClassGenerator::generate(
 	_hStream << "public:" << endl;
 	_hStream << endl;
 
+
 	if ( publicFields.size() > 0 ) {
 
-		if ( publicFields.size() > 0 ) {
-
-			for ( Field f : publicFields ) {
-				writeField( f );
-			}
-
-			_hStream << endl;
-
-			for ( Field f : publicFields ) {
-				writeFieldAccessors( c, f );
-				_hStream << endl;
-			}
+		for ( Field f : publicFields ) {
+			writeField( f );
 		}
 
-		// while we're in public, write out all accessors
-		if ( protectedFields.size() > 0 ) {
-			for ( Field f : protectedFields ) {
-				writeFieldAccessors( c, f );
-				_hStream << endl;
-			}
-		}
-		if ( privateFields.size() > 0 ) {
-			for ( Field f : privateFields ) {
-				writeFieldAccessors( c, f );
-				_hStream << endl;
-			}
-		}
+		_hStream << endl;
 
-		// write out serialization declarations
-		if ( classSerializable ) {
-			writeSerializationDeclarations();
+		for ( Field f : publicFields ) {
+			writeFieldAccessors( c, f );
 			_hStream << endl;
 		}
+	}
+
+	// while we're in public, write out all accessors
+	if ( protectedFields.size() > 0 ) {
+		for ( Field f : protectedFields ) {
+			writeFieldAccessors( c, f );
+			_hStream << endl;
+		}
+	}
+	if ( privateFields.size() > 0 ) {
+		for ( Field f : privateFields ) {
+			writeFieldAccessors( c, f );
+			_hStream << endl;
+		}
+	}
+
+	// write out serialization declarations
+	if ( classSerializable ) {
+		writeSerializationDeclarations();
+		_hStream << endl;
 	}
 
 	// add other fields by access type
