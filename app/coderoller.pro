@@ -10,7 +10,7 @@ INCLUDEPATH += ../include/ \
 		../../roller/include \
 		../tinyxml2/ \
 
-debug:LIBS += -L../roller/debug/ -lroller \
+debug:LIBS += -L../../roller/debug/ -lroller \
 		-L../debug/ -lcoderoller \
  
 release:LIBS += -L../roller/release/ -lroller \

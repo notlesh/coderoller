@@ -42,7 +42,7 @@ list<pair<i32, i64>> listStreamContents( void* pointer ) {
 		i64* objectSizeAddress = (i64*)(buffer + objectOffset);
 		i64 objectSize = *objectSizeAddress;
 
-		i32* objectDefinitionHashAddress = (i32*)(buffer + objectOffset + sizeof(i32));
+		i32* objectDefinitionHashAddress = (i32*)(buffer + objectOffset + sizeof(i64));
 		i32 objectDefinitionHash = *objectDefinitionHashAddress;
 
 		Log::i( " - object: %d : %ld", objectDefinitionHash, objectSize );
