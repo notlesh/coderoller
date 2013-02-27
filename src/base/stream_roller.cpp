@@ -54,10 +54,10 @@ list<pair<i32, i64>> listStreamContents( void* pointer ) {
 }
 
 // createStream
-pair<i64, unique_ptr<ui8[]>> createStreamContents( const list<Serializable*> objects ) {
+pair<i64, unique_ptr<ui8[]>> createStreamContents( const list<const Serializable*> objects ) {
 
 	i64 size = 2 + 4 + 8 + 4 + 2; // all fields other than objects themselves
-	for ( Serializable* object : objects ) {
+	for ( const Serializable* object : objects ) {
 		size += object->getSerializedSize() + 8 + 4; // 8 bytes for size, 4 bytes for hash
 	}
 
@@ -85,7 +85,7 @@ pair<i64, unique_ptr<ui8[]>> createStreamContents( const list<Serializable*> obj
 
 	i64 objectOffset = 18;
 
-	for ( Serializable* object : objects ) {
+	for ( const Serializable* object : objects ) {
 
 		i64 objectSize = object->getSerializedSize();
 		i32 objectDefinitionHash = object->getClassHash();
@@ -115,6 +115,13 @@ pair<i64, unique_ptr<ui8[]>> createStreamContents( const list<Serializable*> obj
 
 	return pair<i64, unique_ptr<ui8[]>>( size, std::move(buffer) );
 
+}
+
+// createStreamContents
+pair<i64, unique_ptr<ui8[]>> createStreamContents( const Serializable& object ) {
+	list<const Serializable*> objects;
+	objects.push_back( &object );
+	return createStreamContents( objects );
 }
 
 }

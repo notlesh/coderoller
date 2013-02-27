@@ -58,7 +58,12 @@ list<pair<i32, i64>> listStreamContents( void* pointer );
  * The returned pair has the size of the buffer and the buffer itself. The size will be the size of the 
  * actual Stream, regardless of the allocated buffer size.
  */
-pair<i64, unique_ptr<ui8[]>> createStreamContents( const list<Serializable*> objects );
+pair<i64, unique_ptr<ui8[]>> createStreamContents( const list<const Serializable*> objects );
+
+/**
+ * Convenience to send a single object.
+ */
+pair<i64, unique_ptr<ui8[]>> createStreamContents( const Serializable& object );
 
 }
 
