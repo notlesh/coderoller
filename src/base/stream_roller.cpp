@@ -96,7 +96,7 @@ pair<i64, unique_ptr<ui8[]>> createStreamContents( const list<Serializable*> obj
 		i32* objectDefinitionHashAddress = (i32*)(pointer + objectOffset + sizeof(i64));
 		*objectDefinitionHashAddress = objectDefinitionHash;
 
-		i64 written = object->serialize( (void*)(objectOffset + sizeof(i64) + sizeof(i32)) );
+		i64 written = object->serialize( (void*)(pointer + objectOffset + sizeof(i64) + sizeof(i32)) );
 
 		if ( written != objectSize ) {
 			throw RollerException( 

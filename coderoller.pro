@@ -1,5 +1,8 @@
-CONFIG += debug thread 
+TEMPLATE = lib
+CONFIG += debug thread static
 QMAKE_CXXFLAGS += -std=c++0x -frtti
+
+SUBDIRS = core
 
 # get some useful git defines
 GIT_HASH = $$system( git rev-parse HEAD )
@@ -13,7 +16,6 @@ QMAKE_CXX = colorgcc
 
 INCLUDEPATH += include/ \
 		../roller/include \
-		test/test_output/include/ \
 		./tinyxml2/ \
 
 debug:LIBS += -L../roller/debug/ -lroller \
