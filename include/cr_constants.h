@@ -6,8 +6,10 @@
 
 using namespace roller;
 
+// each should be kept to 8 bits
 #define CR_MAJOR_VERSION 0
 #define CR_MINOR_VERSION 1
+#define CR_PATCH_VERSION 1
 
 namespace cr {
 

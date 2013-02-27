@@ -24,6 +24,7 @@ SOURCES = $$files(src/*.cpp) \
 		$$files(src/languages/*.cpp) \
 		$$files(src/languages/cpp/*.cpp) \
 		$$files(src/parse/*.cpp) \
+		$$files(src/base/*.cpp) \
 		tinyxml2/tinyxml2.cpp \
 
 HEADERS = $$files(include/*.h) \
