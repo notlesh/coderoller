@@ -13,8 +13,6 @@ namespace cr {
 
 // listStreamContents
 list<pair<i32, i64>> listStreamContents( void* pointer ) {
-	Log::i( "Listing stream contents (%p)...", pointer );
-
 	ui8* buffer = (ui8*)pointer;
 
 	// do some validation
@@ -32,8 +30,6 @@ list<pair<i32, i64>> listStreamContents( void* pointer ) {
 	ui32* numberAddress = (ui32*)(buffer + 14);
 	ui32 numberOfObjects = *numberAddress;
 
-	Log::i( "  - number of objects: %d", numberOfObjects );
-
 	i64 objectOffset = 18;
 	
 	list<pair<i32, i64>> objects;
@@ -44,8 +40,6 @@ list<pair<i32, i64>> listStreamContents( void* pointer ) {
 
 		i32* objectDefinitionHashAddress = (i32*)(buffer + objectOffset + sizeof(i64));
 		i32 objectDefinitionHash = *objectDefinitionHashAddress;
-
-		Log::i( " - object: %d : %ld", objectDefinitionHash, objectSize );
 
 		objects.push_back( pair<i32, i64>( objectDefinitionHash, objectOffset + sizeof(i64) + sizeof(i32) ));
 	}
