@@ -49,6 +49,7 @@ void CPPClassGenerator::generate(
 
 	if ( ! hFileDirty && ! cppFileDirty ) {
 		Log::f( "class files for class %s is up to date.", c._name.c_str() );
+		return;
 	}
 
 	// TODO: check mtime on file and skip all of this if possible
