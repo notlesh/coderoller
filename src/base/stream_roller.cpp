@@ -47,7 +47,7 @@ list<pair<i32, i64>> listStreamContents( void* pointer ) {
 
 		Log::i( " - object: %d : %ld", objectDefinitionHash, objectSize );
 
-		objects.push_back( pair<i32, i64>( objectDefinitionHash, objectSize ));
+		objects.push_back( pair<i32, i64>( objectDefinitionHash, objectOffset + sizeof(i64) + sizeof(i32) ));
 	}
 
 	return objects;
