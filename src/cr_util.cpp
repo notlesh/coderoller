@@ -16,7 +16,10 @@ DataType toDataType( const char* str ) {
 	} else if ( strcmp( str, "string" ) == 0 ) {
 		return DataType::STRING;
 
-	} else if ( strcmp( str, "i8 " ) == 0 ) {
+	} else if ( strcmp( str, "blob" ) == 0 ) {
+		return DataType::BLOB;
+
+	} else if ( strcmp( str, "i8" ) == 0 ) {
 		return DataType::I8;
 
 	} else if ( strcmp( str, "ui8" ) == 0 ) {

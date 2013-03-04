@@ -28,7 +28,9 @@ enum class AccessPrivacy {
  */
 enum class DataType {
 	NONE = 0,
+
 	STRING,
+	BLOB,
 
 	// integer types
 	I8, UI8,

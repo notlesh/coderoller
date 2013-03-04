@@ -33,6 +33,9 @@ const char* getDataTypeName( DataType type ) {
 		case DataType::STRING:
 			return "string";
 
+		case DataType::BLOB:
+			return "ByteArray";
+
 		case DataType::I8:
 			return "i8";
 

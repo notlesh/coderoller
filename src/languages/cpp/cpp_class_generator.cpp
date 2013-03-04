@@ -297,20 +297,81 @@ void CPPClassGenerator::writeFieldAccessors( const Class& c, const Field& f ) {
 
 	string typeName = getDataTypeName( f._dataType );
 
-	_hStream << "\t" << typeName << " get" << capitalized << "() const;" << endl;
-	_hStream << "\tvoid" << " set" << capitalized << "( " << typeName << " value );" << endl;
+	// write declarations
+	if ( f._dataType == DataType::STRING ) {
 
-	// getter
-	_cppStream << typeName << " " << c._name << "::" << "get" << capitalized << "() const {" << endl;
-	_cppStream << "\treturn _" << f._name << ";" << endl;
-	_cppStream << "}" << endl;
-	_cppStream << endl;
+		// string type
+		_hStream << "\t" << typeName << "& get" << capitalized << "();" << endl;
+		_hStream << "\tconst " << typeName << "& get" << capitalized << "() const;" << endl;
+		_hStream << "\tvoid" << " set" << capitalized << "( const " << typeName << "& value );" << endl;
 
-	// setter
-	_cppStream << "void " << c._name << "::" << "set" << capitalized << "( " << typeName << " value ) {" << endl;
-	_cppStream << "\t_" << f._name << " = value;" << endl;
-	_cppStream << "}" << endl;
-	_cppStream << endl;
+	} else if ( f._dataType == DataType::BLOB ) {
+
+		// blob type
+		_hStream << "\t" << typeName << "& get" << capitalized << "();" << endl;
+		_hStream << "\tconst " << typeName << "& get" << capitalized << "() const;" << endl;
+
+	} else {
+
+		// handle primitive types
+		_hStream << "\t" << typeName << " get" << capitalized << "() const;" << endl;
+		_hStream << "\tvoid" << " set" << capitalized << "( " << typeName << " value );" << endl;
+	}
+
+	// write definitions
+	if ( f._dataType == DataType::STRING ) {
+
+		// getter non-const
+		_cppStream << typeName << "& " << c._name << "::" << "get" << capitalized << "() {" << endl;
+		_cppStream << "\treturn _" << f._name << ";" << endl;
+		_cppStream << "}" << endl;
+		_cppStream << endl;
+
+		// getter const
+		_cppStream << "const " << typeName << "& " << c._name << "::" << "get" << capitalized << "() const {" << endl;
+		_cppStream << "\treturn _" << f._name << ";" << endl;
+		_cppStream << "}" << endl;
+		_cppStream << endl;
+
+		// setter
+		_cppStream << "void " << c._name << "::" << "set" << capitalized << "( const " << typeName << "& value ) {" << endl;
+		_cppStream << "\t_" << f._name << " = value;" << endl;
+		_cppStream << "}" << endl;
+		_cppStream << endl;
+
+	} else if ( f._dataType == DataType::BLOB ) {
+
+		// blob type
+
+		// getter non-const
+		_cppStream << typeName << "& " << c._name << "::" << "get" << capitalized << "() {" << endl;
+		_cppStream << "\treturn _" << f._name << ";" << endl;
+		_cppStream << "}" << endl;
+		_cppStream << endl;
+
+		// getter const
+		_cppStream << "const " << typeName << "& " << c._name << "::" << "get" << capitalized << "() const {" << endl;
+		_cppStream << "\treturn _" << f._name << ";" << endl;
+		_cppStream << "}" << endl;
+		_cppStream << endl;
+
+
+	} else {
+
+		// handle primitive types
+
+		// getter
+		_cppStream << typeName << " " << c._name << "::" << "get" << capitalized << "() const {" << endl;
+		_cppStream << "\treturn _" << f._name << ";" << endl;
+		_cppStream << "}" << endl;
+		_cppStream << endl;
+
+		// setter
+		_cppStream << "void " << c._name << "::" << "set" << capitalized << "( " << typeName << " value ) {" << endl;
+		_cppStream << "\t_" << f._name << " = value;" << endl;
+		_cppStream << "}" << endl;
+		_cppStream << endl;
+	}
 
 }
 
@@ -438,7 +499,7 @@ void CPPClassGenerator::writeInternalize( const Class& c, list<Field>& publicFie
 
 // writeInternalizeField
 void CPPClassGenerator::writeInternalizeField( const Field& f ) {
-	if ( f._dataType == DataType::STRING ) {
+	if ( f._dataType == DataType::STRING || f._dataType == DataType::BLOB ) {
 		_cppStream << "\tread += Serialization::read( ((char*)buffer + read), _" << f._name << " );" << endl;
 	} else {
 		_cppStream << "\tread += Serialization::read( ((char*)buffer + read), &_" << f._name << " );" << endl;
