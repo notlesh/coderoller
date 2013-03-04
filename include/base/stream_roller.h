@@ -2,6 +2,7 @@
 #define __CR_BASE_STREAM_ROLLER_H_
 
 #include <memory>
+#include <vector>
 #include <list>
 #include <utility>
 
@@ -10,6 +11,7 @@
 #include "base/serializable.h"
 
 using namespace roller;
+using std::vector;
 using std::list;
 using std::pair;
 using std::unique_ptr;
@@ -44,13 +46,13 @@ namespace cr {
 
 /**
  * List the stream contents. This takes a pointer to the beginning of a StreamRoller transmission stream and
- * will return an ordered list of the object definition hashes in the stream paired with the offset into the
+ * will return an array of the object definition hashes in the stream paired with the offset into the
  * stream at which the object can be found.
  *
- * @return list of pairs of stream contents. The pairs are [object definition hash] [offset to object]. 
+ * @return vector of pairs of stream contents. The pairs are [object definition hash] [offset to object]. 
  * The offset will point directly to the size of the object (see above).
  */
-list<pair<i32, i64>> listStreamContents( void* pointer );
+vector<pair<i32, i64>> listStreamContents( void* pointer );
 
 /** 
  * Create a data stream. This will return a new buffer (inside a unique_ptr) with the contents of the stream.
@@ -65,6 +67,22 @@ pair<i64, unique_ptr<ui8[]>> createStreamContents( const list<const Serializable
  */
 pair<i64, unique_ptr<ui8[]>> createStreamContents( const Serializable& object );
 
+/**
+ * Creates an object of the templated TYPE from the given data stream. This is designed to work with 
+ * Serializable types that have an empty constructor and an internalize() method.
+ */
+template <typename TYPE>
+TYPE inflate( void* pointer );
+
+/**
+ * Retrieve the given object in the given stream. 0-indexed. The passed template TYPE should match 
+ * the object type.
+ */
+template <typename TYPE>
+TYPE getObject( const vector<pair<i32, i64>>& contents, void* pointer, i64 itemIndex );
+
 }
+
+#include "base/stream_roller.tpp"
 
 #endif

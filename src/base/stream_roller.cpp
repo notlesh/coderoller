@@ -5,14 +5,14 @@
 #include "cr_constants.h"
 
 using namespace roller;
-using std::list;
+using std::vector;
 using std::pair;
 using std::unique_ptr;
 
 namespace cr {
 
 // listStreamContents
-list<pair<i32, i64>> listStreamContents( void* pointer ) {
+vector<pair<i32, i64>> listStreamContents( void* pointer ) {
 	ui8* buffer = (ui8*)pointer;
 
 	// do some validation
@@ -32,7 +32,8 @@ list<pair<i32, i64>> listStreamContents( void* pointer ) {
 
 	i64 objectOffset = 18;
 	
-	list<pair<i32, i64>> objects;
+	vector<pair<i32, i64>> objects;
+	objects.reserve( numberOfObjects );
 	for ( ui32 i=0; i<numberOfObjects; i++ ) {
 
 		i64* objectSizeAddress = (i64*)(buffer + objectOffset);
@@ -50,7 +51,14 @@ list<pair<i32, i64>> listStreamContents( void* pointer ) {
 // createStream
 pair<i64, unique_ptr<ui8[]>> createStreamContents( const list<const Serializable*> objects ) {
 
-	i64 size = 2 + 4 + 8 + 4 + 2; // all fields other than objects themselves
+	// all fields other than objects themselves
+	i64 size = 2 // start of transmission designation
+			+ 4 // coderoller version
+			+ 8 // coderoller git hash
+			+ 4 // number of objects
+			+ 2; // end of transmission designation
+
+	// add each object to total size
 	for ( const Serializable* object : objects ) {
 		size += object->getSerializedSize() + 8 + 4; // 8 bytes for size, 4 bytes for hash
 	}
