@@ -73,7 +73,7 @@ void CPPClassGenerator::generate(
 	writeStartIfdefs( c );
 	_hStream << endl;
 
-	writeHHeaderInclude( classSerializable );
+	writeHHeaderInclude( classSerializable, c );
 	_hStream << endl;
 
 	writeHUsingDeclarations( classSerializable );
@@ -130,6 +130,8 @@ void CPPClassGenerator::generate(
 	_hStream << "public:" << endl;
 	_hStream << endl;
 
+	// write s_classHash at top of cpp file
+	_cppStream << "i32 " << c._name << "::s_classHash = " << "__CR_HASH_" << c._name << ";" << endl << endl;
 
 	if ( publicFields.size() > 0 ) {
 
@@ -166,8 +168,7 @@ void CPPClassGenerator::generate(
 	}
 
 	// write out static method to return hash code
-	_hStream << "\tstatic i32 s_classHash;" << endl;
-	_cppStream << "i32 " << c._name << "::s_classHash = " << "__CR_HASH_" << c._name << ";" << endl;
+	_hStream << "\tstatic i32 s_classHash;" << endl << endl;
 
 	// add other fields by access type
 	if ( protectedFields.size() > 0 ) {
@@ -244,7 +245,7 @@ void CPPClassGenerator::writeCPPUsingDeclarations( bool classSerializable ) {
 }
 
 // writeHHeaderInclude
-void CPPClassGenerator::writeHHeaderInclude( bool classSerializable ) {
+void CPPClassGenerator::writeHHeaderInclude( bool classSerializable, const Class& c ) {
 	_hStream		<< "#include <string>" << endl
 				<< endl
 				<< "#include \"core/types.h\"" << endl;
@@ -252,6 +253,20 @@ void CPPClassGenerator::writeHHeaderInclude( bool classSerializable ) {
 		_hStream		<< "#include \"core/serialization.h\"" << endl
 					<< endl
 					<< "#include \"base/serializable.h\"" << endl;
+
+		bool addedBlankLine = false;
+		for ( Field f : c._fields ) {
+			if ( f._dataType == DataType::SERIALIZABLE ) {
+
+				// add a blank line before these includes
+				if ( ! addedBlankLine ) {
+					_hStream << endl;
+					addedBlankLine = true;
+				}
+
+				_hStream << "#include \"" << f._typeName << ".gen.h\"";
+			}
+		}
 	}
 }
 
@@ -299,10 +314,15 @@ void CPPClassGenerator::writeFieldAccessors( const Class& c, const Field& f ) {
 	capitalized += capitalize( f._name[0] );
 	capitalized += (f._name.c_str() + 1);
 
-	string typeName = getDataTypeName( f._dataType );
+	string typeName;
+	if ( f._dataType == DataType::SERIALIZABLE ) {
+		typeName = f._typeName;
+	} else {
+		typeName = getDataTypeName( f._dataType );
+	}
 
 	// write declarations
-	if ( f._dataType == DataType::STRING ) {
+	if ( f._dataType == DataType::STRING || f._dataType == DataType::SERIALIZABLE ) {
 
 		// string type
 		_hStream << "\t" << typeName << "& get" << capitalized << "();" << endl;
@@ -323,7 +343,7 @@ void CPPClassGenerator::writeFieldAccessors( const Class& c, const Field& f ) {
 	}
 
 	// write definitions
-	if ( f._dataType == DataType::STRING ) {
+	if ( f._dataType == DataType::STRING || f._dataType == DataType::SERIALIZABLE ) {
 
 		// getter non-const
 		_cppStream << typeName << "& " << c._name << "::" << "get" << capitalized << "() {" << endl;
@@ -381,7 +401,11 @@ void CPPClassGenerator::writeFieldAccessors( const Class& c, const Field& f ) {
 
 // writeField
 void CPPClassGenerator::writeField( const Field& f ) {
-	_hStream << "\t" << getDataTypeName( f._dataType ) << " _" << f._name << ";" << endl;
+	if ( f._dataType == DataType::SERIALIZABLE ) {
+		_hStream << "\t" << f._typeName << " _" << f._name << ";" << endl;
+	} else {
+		_hStream << "\t" << getDataTypeName( f._dataType ) << " _" << f._name << ";" << endl;
+	}
 }
 
 // writeEndIfdefs
@@ -408,7 +432,7 @@ void CPPClassGenerator::substituteHash( i32 hash, i64 streamPos ) {
 void CPPClassGenerator::writeSerializationDeclarations() {
 	_hStream << "\tvirtual i64 serialize( void* buffer ) const;" << endl
 			<< "\tvirtual i64 getSerializedSize() const;" << endl
-			<< "\tvirtual void internalize( void* buffer );" << endl
+			<< "\tvirtual i64 internalize( void* buffer );" << endl
 			<< "\tvirtual i32 getClassHash() const;" << endl;
 }
 
@@ -450,7 +474,11 @@ void CPPClassGenerator::writeSerialize( const Class& c, list<Field>& publicField
 
 // writeSerializeField
 void CPPClassGenerator::writeSerializeField( const Field& f ) {
-	_cppStream << "\twritten += Serialization::write( ((char*)buffer + written), _" << f._name << " );" << endl;
+	if ( f._dataType == DataType::SERIALIZABLE ) {
+		_cppStream << "\twritten += _" << f._name << ".serialize( ((char*)buffer + written) );" << endl;
+	} else {
+		_cppStream << "\twritten += Serialization::write( ((char*)buffer + written), _" << f._name << " );" << endl;
+	}
 }
 
 // writeGetSerializedSize
@@ -477,6 +505,10 @@ void CPPClassGenerator::writeGetSerializedSize( const Class& c, list<Field>& pub
 void CPPClassGenerator::writeGetSerializedSizeField( const Field& f ) {
 	if ( f._dataType == DataType::STRING ) {
 		_cppStream << "\tsize += sizeof( i64 ) + _" << f._name << ".size(); // _" << f._name << endl;
+	} else if ( f._dataType == DataType::BLOB ) {
+		_cppStream << "\tsize += sizeof( i64 ) + _" << f._name << ".getSize(); // _" << f._name << endl;
+	} else if ( f._dataType == DataType::SERIALIZABLE ) {
+		_cppStream << "\tsize += _" << f._name << ".getSerializedSize(); // _" << f._name << endl;
 	} else {
 		_cppStream << "\tsize += sizeof( " << getDataTypeName( f._dataType ) << " ); // _" << f._name << endl;
 	}
@@ -485,7 +517,7 @@ void CPPClassGenerator::writeGetSerializedSizeField( const Field& f ) {
 // writeInternalize
 void CPPClassGenerator::writeInternalize( const Class& c, list<Field>& publicFields, list<Field>& protectedFields, list<Field>& privateFields ) {
 
-	_cppStream << "void " << c._name << "::internalize( void* buffer ) {" << endl;
+	_cppStream << "i64 " << c._name << "::internalize( void* buffer ) {" << endl;
 	_cppStream << "\ti64 read = 0;" << endl;
 
 	for ( Field f : publicFields ) {
@@ -498,13 +530,16 @@ void CPPClassGenerator::writeInternalize( const Class& c, list<Field>& publicFie
 		writeInternalizeField( f );
 	}
 
-	_cppStream << "}" << endl;
+	_cppStream	<< "\treturn read;" << endl
+				<< "}" << endl;
 }
 
 // writeInternalizeField
 void CPPClassGenerator::writeInternalizeField( const Field& f ) {
 	if ( f._dataType == DataType::STRING || f._dataType == DataType::BLOB ) {
 		_cppStream << "\tread += Serialization::read( ((char*)buffer + read), _" << f._name << " );" << endl;
+	} else if ( f._dataType == DataType::SERIALIZABLE ) {
+		_cppStream << "\tread += _" << f._name << ".internalize( ((char*)buffer + read) );" << endl;
 	} else {
 		_cppStream << "\tread += Serialization::read( ((char*)buffer + read), &_" << f._name << " );" << endl;
 	}

@@ -35,8 +35,10 @@ public:
 	/**
 	 * Internalize the serialized stream. The implementation should initialize all serialized 
 	 * members in such a manner as to reciprocate the serialize() function.
+	 *
+	 * Should return the number of bytes used from the stream to internalize.
 	 */
-	virtual void internalize( void* buffer ) = 0;
+	virtual i64 internalize( void* buffer ) = 0;
 
 	/**
 	 * Return a hash code for the class that uniquely identifies it. If the class definition changes 

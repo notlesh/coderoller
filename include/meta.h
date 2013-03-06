@@ -23,6 +23,7 @@ struct Field {
 	string _name;
 	AccessPrivacy _memberPrivacy;
 	DataType _dataType;
+	string _typeName; // for object types, indicates the objects type name
 	string _defaultValue;
 	SerializableSpecification _serializable;
 

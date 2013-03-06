@@ -67,7 +67,7 @@ private:
 	/**
 	 * Write H Header includes
 	 */
-	void writeHHeaderInclude( bool classSerializable );
+	void writeHHeaderInclude( bool classSerializable, const Class& c );
 
 	/**
 	 * Write H using declarations

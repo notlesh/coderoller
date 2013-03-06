@@ -136,6 +136,25 @@ Field parseField( XMLElement* fieldElement, shared_ptr<GenConfig> config, const 
 	}
 	try {
 		f._dataType = toDataType( fieldType );
+
+		if ( f._dataType == DataType::SERIALIZABLE ) {
+			i32 length = strlen( fieldType );
+
+			// also grab type name
+			if ( length < 14 ) {
+				throw MissingAttributeException( "Invalid serializable type name" );
+			} else if ( length > (1024 + 13 - 1) ) {
+				throw MissingAttributeException( "serializable type name is too long" );
+			}
+
+			Log::i( "Processing serializable: %s", fieldType );
+
+			char buffer[1024];
+			strncpy( buffer, (fieldType + 13), (length - 13) );
+			buffer[ (length - 13) ] = 0x00;
+
+			f._typeName = buffer;
+		}
 	} catch ( ... ) {
 		Log::w( "Exception caught while parsing class %s. Rethrowing.", c._name.c_str() );
 		throw;

@@ -19,6 +19,9 @@ DataType toDataType( const char* str ) {
 	} else if ( strcmp( str, "blob" ) == 0 ) {
 		return DataType::BLOB;
 
+	} else if ( strlen( str ) > 12 && memcmp( str, "serializable", 12 ) == 0 ) {
+		return DataType::SERIALIZABLE;
+
 	} else if ( strcmp( str, "i8" ) == 0 ) {
 		return DataType::I8;
 
@@ -74,8 +77,6 @@ Language toLanguage( const char* str ) {
 
 // toAccessPrivacy
 AccessPrivacy toAccessPrivacy( const char* str ) {
-
-	Log::i( "toAccessPrivacy( %s )", str );
 
 	if ( nullptr == str || strcmp( str, "" ) == 0 ) {
 		return AccessPrivacy::NONE;
