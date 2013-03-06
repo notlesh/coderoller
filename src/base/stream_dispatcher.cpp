@@ -10,6 +10,15 @@ using std::function;
 
 namespace cr {
 
+// Constructor
+StreamObjectDispatcher::StreamObjectDispatcher() :
+				_toleranceType(MissingHandlerTolerance::THROW) {
+}
+
+// Destructor
+StreamObjectDispatcher::~StreamObjectDispatcher() {
+}
+
 // setHandler
 void StreamObjectDispatcher::setHandler( i32 classHash, const HandlerFunction& handler ) {
 	_handlers[classHash] = handler;
@@ -44,14 +53,14 @@ void StreamObjectDispatcher::handleStream( void* ptr ) {
 
 			switch ( _toleranceType ) {
 				case MissingHandlerTolerance::THROW:
-					throw RollerException( "Missing stream handler for object type %d", classHash );
+					throw RollerException( "Missing stream handler for object type %u", classHash );
 
 				case MissingHandlerTolerance::WARN:
-					Log::w( "Missing stream handler for object type %d (ignoring object)", classHash );
+					Log::w( "Missing stream handler for object type %u (ignoring object)", classHash );
 					break;
 
 				case MissingHandlerTolerance::SILENT:
-					Log::f( "Silently ignoring handler for object type %d", classHash );
+					Log::f( "Silently ignoring handler for object type %u", classHash );
 					break;
 			}
 

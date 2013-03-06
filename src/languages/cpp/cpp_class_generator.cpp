@@ -165,6 +165,10 @@ void CPPClassGenerator::generate(
 		_hStream << endl;
 	}
 
+	// write out static method to return hash code
+	_hStream << "\tstatic i32 s_classHash;" << endl;
+	_cppStream << "i32 " << c._name << "::s_classHash = " << "__CR_HASH_" << c._name << ";" << endl;
+
 	// add other fields by access type
 	if ( protectedFields.size() > 0 ) {
 		

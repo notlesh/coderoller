@@ -47,6 +47,16 @@ class StreamObjectDispatcher {
 public:
 
 	/**
+	 * Constructor
+	 */
+	StreamObjectDispatcher();
+
+	/**
+	 * Destructor
+	 */
+	virtual ~StreamObjectDispatcher();
+
+	/**
 	 * Sets the handler for an object.
 	 *
 	 * @param classHash is the class hash of the object type the handler is provided for.
