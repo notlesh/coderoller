@@ -133,6 +133,8 @@ void CPPClassGenerator::generate(
 	// write s_classHash at top of cpp file
 	_cppStream << "i32 " << c._name << "::s_classHash = " << "__CR_HASH_" << c._name << ";" << endl << endl;
 
+	writeConstructors( c );
+
 	if ( publicFields.size() > 0 ) {
 
 		for ( Field f : publicFields ) {
@@ -307,6 +309,93 @@ void CPPClassGenerator::writeMainHeader() {
 			<< " */" << endl;
 }
 
+// writeConstructors
+void CPPClassGenerator::writeConstructors( const Class& c ) {
+	_hStream	<< "\t// declare default empty ctor and dtor" << endl
+				<< "\t" << c._name << "() = default;" << endl // empty ctor
+				<< "\t~" << c._name << "() = default;" << endl // dtor
+				<< endl
+				<< "\t// declare default copy ctor/assignment and let the compiler generate it if possible" << endl
+				<< "\t" << c._name << "( const " << c._name << "& other ) = default;" << endl // copy ctor
+				<< "\t" << c._name << "& operator=( const " << c._name << "& other ) = default;" << endl // copy assignment
+				<< endl
+				<< "\t// declare custom move ctor/assignment" << endl
+				<< "\t" << c._name << "( " << c._name << "&& other );" << endl // move ctor
+				<< "\t" << c._name << "& operator=( " << c._name << "&& other );" << endl // move assignment
+				<< endl
+				<< "\t// copy convenience functions" << endl
+				<< "\tvoid copyFrom( const " << c._name << "& other );" << endl // copy()
+				<< "\t" << c._name << " clone() const;" << endl // copy()
+				<< endl;
+
+	// move ctor
+	_cppStream	<< c._name << "::" << c._name << "( " << c._name << "&& other ) {" << endl;
+	for ( Field f : c._fields ) {
+		writeMoveAssignment( f );
+	}
+	_cppStream	<< "}" << endl
+				<< endl;
+
+	// move assignment
+	_cppStream	<< c._name << "& " << c._name << "::operator=( " << c._name << "&& other ) {" << endl;
+	for ( Field f : c._fields ) {
+		writeMoveAssignment( f );
+	}
+	_cppStream	<< "\treturn *this;" << endl
+				<< "}" << endl
+				<< endl;
+
+	// copyFrom
+	_cppStream	<< "void " << c._name << "::copyFrom( const " << c._name << "& other ) {" << endl;
+	for ( Field f : c._fields ) {
+		writeCopyAssignment( f );
+	}
+	_cppStream	<< "}" << endl
+				<< endl;
+
+	// clone
+	_cppStream	<< c._name << " " << c._name << "::clone() const {" << endl 
+				<< "\t" << c._name << " copy;" << endl;
+	for ( Field f : c._fields ) {
+		writeCloneAssignment( f );
+	}
+	_cppStream	<< "\treturn copy;" << endl
+				<< "}" << endl
+				<< endl;
+
+}
+
+// writeMoveAssignment
+void CPPClassGenerator::writeMoveAssignment( const Field& f ) {
+	if ( f._dataType == DataType::STRING || f._dataType == DataType::BLOB ) {
+		_cppStream	<< "\t_" << f._name << ".swap( other._" << f._name << " );" << endl;
+	} else if (  f._dataType == DataType::SERIALIZABLE ) {
+		_cppStream	<< "\t_" << f._name << " = std::move( other._" << f._name << " );" << endl;
+	} else {
+		_cppStream	<< "\t_" << f._name << " = other._" << f._name << ";" << endl;
+	}
+
+}
+
+// writeCopyAssignment
+void CPPClassGenerator::writeCopyAssignment( const Field& f ) {
+	if ( f._dataType == DataType::BLOB || f._dataType == DataType::SERIALIZABLE ) {
+		_cppStream	<< "\t_" << f._name << ".copyFrom( other._" << f._name << " );" << endl;
+	} else {
+		_cppStream	<< "\t_" << f._name << " = other._" << f._name << ";" << endl;
+	}
+
+}
+
+// writeCloneAssignment
+void CPPClassGenerator::writeCloneAssignment( const Field& f ) {
+	if ( f._dataType == DataType::BLOB || f._dataType == DataType::SERIALIZABLE ) {
+		_cppStream	<< "\tcopy._" << f._name << ".copyFrom( _" << f._name << " );" << endl;
+	} else {
+		_cppStream	<< "\tcopy._" << f._name << " = _" << f._name << ";" << endl;
+	}
+}
+
 // writeFieldAccessors
 void CPPClassGenerator::writeFieldAccessors( const Class& c, const Field& f ) {
 
@@ -328,6 +417,7 @@ void CPPClassGenerator::writeFieldAccessors( const Class& c, const Field& f ) {
 		_hStream << "\t" << typeName << "& get" << capitalized << "();" << endl;
 		_hStream << "\tconst " << typeName << "& get" << capitalized << "() const;" << endl;
 		_hStream << "\tvoid" << " set" << capitalized << "( const " << typeName << "& value );" << endl;
+		_hStream << "\tvoid" << " set" << capitalized << "( " << typeName << "&& value );" << endl;
 
 	} else if ( f._dataType == DataType::BLOB ) {
 
@@ -359,7 +449,19 @@ void CPPClassGenerator::writeFieldAccessors( const Class& c, const Field& f ) {
 
 		// setter
 		_cppStream << "void " << c._name << "::" << "set" << capitalized << "( const " << typeName << "& value ) {" << endl;
-		_cppStream << "\t_" << f._name << " = value;" << endl;
+
+		if ( f._dataType == DataType::STRING ) {
+			_cppStream << "\t_" << f._name << " = value;" << endl;
+		} else {
+			_cppStream << "\t_" << f._name << ".copyFrom( value );" << endl;
+		}
+
+		_cppStream << "}" << endl;
+		_cppStream << endl;
+
+		// move setter
+		_cppStream << "void " << c._name << "::" << "set" << capitalized << "( " << typeName << "&& value ) {" << endl;
+		_cppStream << "\t_" << f._name << " = std::move( value );" << endl;
 		_cppStream << "}" << endl;
 		_cppStream << endl;
 

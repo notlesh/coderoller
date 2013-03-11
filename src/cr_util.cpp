@@ -53,7 +53,7 @@ DataType toDataType( const char* str ) {
 		return DataType::F64;
 
 	} else {
-		throw RollerException( "Unrecognized DataType string" );
+		throw RollerException( "Unrecognized DataType: %s", str );
 	}
 }
 
@@ -70,7 +70,7 @@ Language toLanguage( const char* str ) {
 
 	} else {
 
-		throw RollerException( "Unrecognized Language string" );
+		throw RollerException( "Unrecognized Language: %s", str );
 	}
 
 }
@@ -91,7 +91,7 @@ AccessPrivacy toAccessPrivacy( const char* str ) {
 		return AccessPrivacy::PUBLIC;
 
 	} else {
-		throw RollerException( "Unrecognized AccessPrivacy string" );
+		throw RollerException( "Unrecognized AccessPrivacy: %s", str );
 	}
 
 }

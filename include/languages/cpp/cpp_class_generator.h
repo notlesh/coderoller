@@ -84,6 +84,26 @@ private:
 	 */
 	void writeMainHeader();
 
+	/**
+	 * Write constructors
+	 */
+	void writeConstructors( const Class& c );
+
+	/**
+	 * Write move assignment for the given field
+	 */
+	void writeMoveAssignment( const Field& f );
+
+	/**
+	 * Wrice copy assigment
+	 */
+	void writeCopyAssignment( const Field& f );
+
+	/** 
+	 * Write clone assignment
+	 */
+	void writeCloneAssignment( const Field& f );
+
 	/** 
 	 * Write a field
 	 */
