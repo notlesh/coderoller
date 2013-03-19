@@ -13,7 +13,7 @@ INCLUDEPATH += ../include/ \
 debug:LIBS += -L../../roller/debug/ -lroller \
 		-L../debug/ -lcoderoller \
  
-release:LIBS += -L../roller/release/ -lroller \
+release:LIBS += -L../../roller/release/ -lroller \
 		-L../release/ -lcoderoller \
 
 SOURCES = $$files(*.cpp) \
