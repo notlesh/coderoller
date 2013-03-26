@@ -43,6 +43,8 @@ vector<pair<i32, i64>> listStreamContents( void* pointer ) {
 		i32 objectDefinitionHash = *objectDefinitionHashAddress;
 
 		objects.push_back( pair<i32, i64>( objectDefinitionHash, objectOffset + sizeof(i64) + sizeof(i32) ));
+
+		buffer += objectSize;
 	}
 
 	return objects;
