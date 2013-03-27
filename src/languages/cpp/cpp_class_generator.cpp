@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <ios>
+#include <set>
 
 #include "core/aver.h"
 #include "core/util.h"
@@ -13,6 +14,7 @@
 #include "cr_util.h"
 
 using namespace roller;
+using std::set;
 using std::unique_ptr;
 using std::shared_ptr;
 using std::ostream;
@@ -256,17 +258,24 @@ void CPPClassGenerator::writeHHeaderInclude( bool classSerializable, const Class
 					<< endl
 					<< "#include \"base/serializable.h\"" << endl;
 
+		set<string> includedFiles;
+
 		bool addedBlankLine = false;
 		for ( Field f : c._fields ) {
+
 			if ( f._dataType == DataType::SERIALIZABLE ) {
 
-				// add a blank line before these includes
-				if ( ! addedBlankLine ) {
-					_hStream << endl;
-					addedBlankLine = true;
-				}
+				if ( includedFiles.find( f._typeName ) == includedFiles.end() ) {
 
-				_hStream << "#include \"" << f._typeName << ".gen.h\"";
+					// add a blank line before these includes
+					if ( ! addedBlankLine ) {
+						_hStream << endl;
+						addedBlankLine = true;
+					}
+
+					_hStream << "#include \"" << f._typeName << ".gen.h\"" << endl;
+					includedFiles.insert( f._typeName );
+				}
 			}
 		}
 	}
