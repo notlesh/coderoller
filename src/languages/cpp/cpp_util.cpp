@@ -66,6 +66,9 @@ const char* getDataTypeName( DataType type ) {
 		case DataType::F64:
 			return "f64";
 
+		case DataType::BOOLEAN:
+			return "bool";
+
 		default:
 			throw RollerException( "Unrecognized DataType" );
 

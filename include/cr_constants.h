@@ -40,7 +40,9 @@ enum class DataType {
 	I64, UI64,
 
 	F32,
-	F64
+	F64,
+
+	BOOLEAN
 };
 
 /**

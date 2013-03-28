@@ -52,6 +52,10 @@ DataType toDataType( const char* str ) {
 	} else if ( strcmp( str, "f64" ) == 0 ) {
 		return DataType::F64;
 
+	} else if ( strcmp( str, "bool" ) == 0 ||
+			strcmp( str, "boolean" ) == 0 ) {
+		return DataType::BOOLEAN;
+
 	} else {
 		throw RollerException( "Unrecognized DataType: %s", str );
 	}
