@@ -1,6 +1,6 @@
 TEMPLATE = lib
 CONFIG += debug thread static
-QMAKE_CXXFLAGS += -std=c++0x -frtti
+QMAKE_CXXFLAGS += -std=c++0x -frtti -Werror
 
 SUBDIRS = core
 

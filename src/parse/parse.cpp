@@ -80,12 +80,12 @@ shared_ptr<GenConfig> parseXML( const char* filename ) {
 
 	// defaultSerializable
 	const char* defaultSerializableStr = root->Attribute( DEFAULT_SERIALIZABLE_ATTRIBUTE_NAME );
-	config->_package._defaultSerializable = cr::toSerializableSpecification( defaultMemberPrivacyStr );
+	config->_package._defaultSerializable = cr::toSerializableSpecification( defaultSerializableStr );
 
 	// parse class nodes
 	XMLElement* classElement = root->FirstChildElement( CLASS_NODE_NAME );
 	while ( classElement ) {
-		config->_package._classes.push_back( parseClass( classElement, config ));
+		config->_package._classes.push_back( parseClass( classElement ));
 		classElement = classElement->NextSiblingElement( CLASS_NODE_NAME );
 	}
 
@@ -93,7 +93,7 @@ shared_ptr<GenConfig> parseXML( const char* filename ) {
 }
 
 // parseClass
-Class parseClass( XMLElement* classElement, shared_ptr<GenConfig> config ) {
+Class parseClass( XMLElement* classElement ) {
 
 	Class c;
 
@@ -111,7 +111,7 @@ Class parseClass( XMLElement* classElement, shared_ptr<GenConfig> config ) {
 	XMLElement* fieldElement = classElement->FirstChildElement( FIELD_NODE_NAME );
 	while ( fieldElement ) {
 
-		c._fields.push_back( parseField( fieldElement, config, c ));
+		c._fields.push_back( parseField( fieldElement, c ));
 		fieldElement = fieldElement->NextSiblingElement( FIELD_NODE_NAME );
 
 	}
@@ -120,7 +120,7 @@ Class parseClass( XMLElement* classElement, shared_ptr<GenConfig> config ) {
 }
 
 // parseField
-Field parseField( XMLElement* fieldElement, shared_ptr<GenConfig> config, const Class& c ) {
+Field parseField( XMLElement* fieldElement, const Class& c ) {
 
 	Field f;
 	

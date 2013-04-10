@@ -22,12 +22,12 @@ shared_ptr<GenConfig> parseXML( const char* filename );
 /**
  * Parse a class XML element
  */
-Class parseClass( XMLElement* classElement, shared_ptr<GenConfig> config );
+Class parseClass( XMLElement* classElement );
 
 /**
  * Parse a field XML element
  */
-Field parseField( XMLElement* fieldElement, shared_ptr<GenConfig> config, const Class& c );
+Field parseField( XMLElement* fieldElement, const Class& c );
 
 }
 
