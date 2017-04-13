@@ -4,6 +4,8 @@
 #include <memory>
 #include <map>
 
+#include "core/file.h"
+
 #include "languages/generator.h"
 
 using std::map;

@@ -6,15 +6,11 @@
 #include <sstream>
 #include <ios>
 
-#include <roller/core/aver.h>
-#include <roller/core/util.h>
-
 #include "languages/cpp/cpp_util.h"
 #include "languages/cpp/cpp_class_generator.h"
 #include "cr_constants.h"
 #include "cr_util.h"
 
-using namespace roller;
 using std::unique_ptr;
 using std::shared_ptr;
 using std::ostream;

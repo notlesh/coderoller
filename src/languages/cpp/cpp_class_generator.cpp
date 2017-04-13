@@ -6,14 +6,11 @@
 #include <ios>
 #include <set>
 
-#include <roller/core/aver.h>
-#include <roller/core/util.h>
-
 #include "languages/cpp/cpp_util.h"
 #include "cr_constants.h"
 #include "cr_util.h"
+#include "core/log.h"
 
-using namespace roller;
 using std::set;
 using std::unique_ptr;
 using std::shared_ptr;
@@ -306,7 +303,7 @@ void CPPClassGenerator::writeMainHeader() {
 			<< " * CodeRoller git hash: " << GIT_HASH << endl
 			<< " * CodeRoller git branch: " << GIT_BRANCH << endl
 			<< " *" << endl
-			<< " * Generated on " << getTime() << endl
+			<< " * Generated on " << getTimeMillis() << endl
 			<< " * Class hash: 00000000";
 	
 	// grab position here; we will return to it to overwrite class hash once we can compute it.

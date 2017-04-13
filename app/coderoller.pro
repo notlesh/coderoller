@@ -7,14 +7,11 @@ QMAKE_CXXFLAGS += -std=c++0x -frtti
 QMAKE_CXX = colorgcc
 
 INCLUDEPATH += ../include/ \
-		../../roller/include \
 		../tinyxml2/ \
 
-debug:LIBS += -L../../roller/core/debug/ -lroller_core \
-		-L../debug/ -lcoderoller \
+debug:LIBS += -L../debug/ -lcoderoller \
  
-release:LIBS += -L../../roller/core/release/ -lroller_core \
-		-L../release/ -lcoderoller \
+release:LIBS += -L../release/ -lcoderoller \
 
 SOURCES = $$files(*.cpp) \
 

@@ -1,8 +1,8 @@
 #include <string.h>
 
-#include <roller/core/types.h>
-#include <roller/core/log.h>
-#include <roller/core/file.h>
+#include "core/types.h"
+#include "core/log.h"
+#include "core/file.h"
 
 #include "meta.h"
 #include "cr_constants.h"
@@ -10,7 +10,6 @@
 #include "generate.h"
 #include "parse/parse.h"
 
-using namespace roller;
 using namespace cr;
 
 void printUsage();
@@ -67,12 +66,12 @@ i32 parseCL( i32 argc, char** argv ) {
 
 	g_inputFile = File( argv[1] );
 	if ( ! g_inputFile.exists() && ! g_inputFile.isDir() ) {
-		throw RollerException( "Invalid input file %s", argv[1] );
+		throw CRException( "Invalid input file %s", argv[1] );
 	}
 
 	g_outputDir = File( argv[2] );
 	if ( ! g_outputDir.exists() && ! g_outputDir.isDir() ) {
-		throw RollerException( "Invalid output directory %s", argv[2] );
+		throw CRException( "Invalid output directory %s", argv[2] );
 	}
 
 	return 0;

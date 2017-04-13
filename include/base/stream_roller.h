@@ -6,11 +6,10 @@
 #include <list>
 #include <utility>
 
-#include <roller/core/types.h>
+#include "core/types.h"
 
 #include "base/serializable.h"
 
-using namespace roller;
 using std::vector;
 using std::list;
 using std::pair;

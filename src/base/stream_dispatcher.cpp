@@ -1,10 +1,9 @@
 #include "base/stream_dispatcher.h"
 
-#include <roller/core/log.h>
+#include "core/log.h"
 
 #include "base/stream_roller.h"
 
-using namespace roller;
 using std::map;
 using std::function;
 
@@ -53,7 +52,7 @@ void StreamObjectDispatcher::handleStream( void* ptr ) {
 
 			switch ( _toleranceType ) {
 				case MissingHandlerTolerance::THROW:
-					throw RollerException( "Missing stream handler for object type %u", classHash );
+					throw CRException( "Missing stream handler for object type %u", classHash );
 
 				case MissingHandlerTolerance::WARN:
 					Log::w( "Missing stream handler for object type %u (ignoring object)", classHash );

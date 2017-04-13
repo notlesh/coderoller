@@ -3,12 +3,11 @@
 
 #include <memory>
 
-#include <roller/core/exception.h>
+#include "core/exception.h"
 #include "tinyxml2.h"
 
 #include "meta.h"
 
-using namespace roller;
 using namespace tinyxml2;
 using std::shared_ptr;
 

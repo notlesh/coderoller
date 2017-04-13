@@ -1,9 +1,7 @@
 #ifndef __CR_BASE_SERIALIZABLE_H_
 #define __CR_BASE_SERIALIZABLE_H_
 
-#include <roller/core/types.h>
-
-using namespace roller;
+#include "core/types.h"
 
 namespace cr {
 

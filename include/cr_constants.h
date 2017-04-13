@@ -1,10 +1,8 @@
 #ifndef __CR_CR_CONSTANTS_H_
 #define __CR_CR_CONSTANTS_H_
 
-#include <roller/core/exception.h>
-#include <roller/core/file.h>
-
-using namespace roller;
+#include "core/exception.h"
+#include "core/file.h"
 
 // each should be kept to 8 bits
 #define CR_MAJOR_VERSION 0
@@ -65,25 +63,25 @@ enum class SerializableSpecification {
 /** 
  * InvalidNodeNameException
  */
-class InvalidNodeNameException : public RollerException {
+class InvalidNodeNameException : public CRException {
 
 public:
 
 	// TODO: replace with C++11 Inherited Constructors if they ever get implemented
 	template<class ... Args> 
-	InvalidNodeNameException(Args&& ... args) : RollerException(args...) { } 
+	InvalidNodeNameException(Args&& ... args) : CRException(args...) { } 
 };
 
 /** 
  * MissingAttributeException
  */
-class MissingAttributeException : public RollerException {
+class MissingAttributeException : public CRException {
 
 public:
 
 	// TODO: replace with C++11 Inherited Constructors if they ever get implemented
 	template<class ... Args> 
-	MissingAttributeException(Args&& ... args) : RollerException(args...) { } 
+	MissingAttributeException(Args&& ... args) : CRException(args...) { } 
 };
 
 };

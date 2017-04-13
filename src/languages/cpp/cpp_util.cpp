@@ -5,14 +5,13 @@
 #include <fstream>
 #include <sstream>
 #include <ios>
-
-#include <roller/core/aver.h>
-#include <roller/core/util.h>
+#include <chrono>
 
 #include "cr_constants.h"
 #include "cr_util.h"
 
-using namespace roller;
+#define HASH_MULTIPLIER 37
+
 using std::unique_ptr;
 using std::shared_ptr;
 using std::ostream;
@@ -70,7 +69,7 @@ const char* getDataTypeName( DataType type ) {
 			return "bool";
 
 		default:
-			throw RollerException( "Unrecognized DataType" );
+			throw CRException( "Unrecognized DataType" );
 
 	}
 
@@ -94,7 +93,7 @@ const char* getPrivacyName( AccessPrivacy privacy ) {
 			return "public";
 
 		default:
-			throw RollerException( "Unrecognized AccessPrivacy" );
+			throw CRException( "Unrecognized AccessPrivacy" );
 	}
 }
 
@@ -134,7 +133,7 @@ bool resolveFieldSerializable( const Package& p, const Class& c, const Field& f 
 		// class explicitly says no (field should not say yes)
 
 		if ( f._serializable == SerializableSpecification::YES ) {
-			throw RollerException( "Field specifiecd as serializable, but class specified as not serializable" );
+			throw CRException( "Field specifiecd as serializable, but class specified as not serializable" );
 		}
 		return false;
 
@@ -164,11 +163,28 @@ bool resolveFieldSerializable( const Package& p, const Class& c, const Field& f 
 		// nothing specifies yes, so if field specifies yes, we have error, otherwise no serializable.
 
 		if ( f._serializable == SerializableSpecification::YES ) {
-			throw RollerException( "Field specifiecd as serializable, neither class nor package specify serialiazable" );
+			throw CRException( "Field specifiecd as serializable, neither class nor package specify serialiazable" );
 		}
 		return false;
 
 	}
+}
+
+// hash
+ui32 hash( const char* str, ui32 h ) {
+	char *p;
+
+	for ( p = (char*)str; *p != '\0'; p++ ) {
+		h = HASH_MULTIPLIER * h + *p;
+	}
+	return h; // or, h % ARRAY_SIZE;
+}
+
+// getTimeMillis
+ui64 getTimeMillis() {
+	// here's a taste of the T in STL...
+	std::chrono::time_point<std::chrono::system_clock> time = std::chrono::system_clock::now();
+	return std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count();
 }
 
 };

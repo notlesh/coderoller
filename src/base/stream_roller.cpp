@@ -1,10 +1,7 @@
 #include "base/stream_roller.h"
 
-#include <roller/core/aver.h>
-
 #include "cr_constants.h"
 
-using namespace roller;
 using std::vector;
 using std::pair;
 using std::unique_ptr;
@@ -17,14 +14,14 @@ vector<pair<i32, i64>> listStreamContents( void* pointer ) {
 
 	// do some validation
 	if ( buffer[0] != 0x73 || buffer[1] != 0x72 ) {
-		throw RollerException( "Not a valid StreamRoller stream (invalid begin transmission designation)" );
+		throw CRException( "Not a valid StreamRoller stream (invalid begin transmission designation)" );
 	}
 
 	if ( (buffer[3] != (ui8)CR_MAJOR_VERSION)
 			|| (buffer[4] != (ui8)CR_MINOR_VERSION)
 			|| (buffer[5] != (ui8)CR_PATCH_VERSION) ) {
 
-		throw RollerException( "Stream is of a different version" );
+		throw CRException( "Stream is of a different version" );
 	}
 
 	ui32* numberAddress = (ui32*)(buffer + 14);
@@ -107,7 +104,7 @@ pair<i64, unique_ptr<ui8[]>> createStreamContents( const list<const Serializable
 		i64 written = object->serialize( (void*)(pointer + objectOffset + sizeof(i64) + sizeof(i32)) );
 
 		if ( written != objectSize ) {
-			throw RollerException( 
+			throw CRException( 
 					"Serialized object did not write exactly its size (size=%ld, written=%ld)",
 					objectSize,
 					written );

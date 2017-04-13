@@ -1,16 +1,15 @@
 #include "parse/parse.h"
 
+#include <vector>
+
 #include "tinyxml2.h"
 
-#include <roller/core/log.h>
-#include <roller/core/util.h>
-
+#include "core/log.h"
 #include "cr_globals.h"
 #include "cr_util.h"
 #include "languages/generator.h"
 
 using namespace tinyxml2;
-using namespace roller;
 
 #define ROOT_NODE_NAME "CodeRoller"
 #define CLASS_NODE_NAME "class"
@@ -24,6 +23,8 @@ using namespace roller;
 #define DEFAULT_SERIALIZABLE_ATTRIBUTE_NAME "defaultSerializable"
 #define SERIALIZABLE_ATTRIBUTE_NAME "serializable"
 
+using std::vector;
+
 namespace cr {
 
 // parseXML
@@ -35,7 +36,7 @@ shared_ptr<GenConfig> parseXML( const char* filename ) {
 
 	File configFile( filename );
 	if ( ! configFile.exists() ) {
-		throw RollerException( "Config file %s does not exist", filename );
+		throw CRException( "Config file %s does not exist", filename );
 	}
 
 	config->_mTime = configFile.getMTime();

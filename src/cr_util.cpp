@@ -1,10 +1,9 @@
 #include <string.h>
 
-#include <roller/core/log.h>
+#include "core/log.h"
+#include "core/types.h"
 
 #include "cr_util.h"
-
-using namespace roller;
 
 namespace cr {
 
@@ -57,7 +56,7 @@ DataType toDataType( const char* str ) {
 		return DataType::BOOLEAN;
 
 	} else {
-		throw RollerException( "Unrecognized DataType: %s", str );
+		throw CRException( "Unrecognized DataType: %s", str );
 	}
 }
 
@@ -74,7 +73,7 @@ Language toLanguage( const char* str ) {
 
 	} else {
 
-		throw RollerException( "Unrecognized Language: %s", str );
+		throw CRException( "Unrecognized Language: %s", str );
 	}
 
 }
@@ -95,7 +94,7 @@ AccessPrivacy toAccessPrivacy( const char* str ) {
 		return AccessPrivacy::PUBLIC;
 
 	} else {
-		throw RollerException( "Unrecognized AccessPrivacy: %s", str );
+		throw CRException( "Unrecognized AccessPrivacy: %s", str );
 	}
 
 }

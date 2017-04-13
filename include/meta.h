@@ -4,12 +4,11 @@
 #include <string>
 #include <list>
 
-#include <roller/core/types.h>
-#include <roller/core/file.h>
+#include "core/types.h"
+#include "core/file.h"
 
 #include "cr_constants.h"
 
-using namespace roller;
 using std::string;
 using std::list;
 

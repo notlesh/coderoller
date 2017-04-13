@@ -15,14 +15,10 @@ DEFINES += GIT_HASH=\\\"$$GIT_HASH\\\" GIT_BRANCH=\\\"$$GIT_BRANCH\\\"
 QMAKE_CXX = colorgcc
 
 INCLUDEPATH += include/ \
-		../roller/include \
 		./tinyxml2/ \
 
-debug:LIBS += -L../roller/core/debug/ -lroller_core \
- 
-release:LIBS += -L../roller/core/release/ -lroller_core \
-
 SOURCES = $$files(src/*.cpp) \
+		$$files(src/core/*.cpp) \
 		$$files(src/languages/*.cpp) \
 		$$files(src/languages/cpp/*.cpp) \
 		$$files(src/parse/*.cpp) \
@@ -30,6 +26,7 @@ SOURCES = $$files(src/*.cpp) \
 		tinyxml2/tinyxml2.cpp \
 
 HEADERS = $$files(include/*.h) \
+		$$files(include/core/*.h) \
 		$$files(include/languages/*.h) \
 		$$files(include/languages/cpp/*.h) \
 		$$files(include/parse/*.h) \

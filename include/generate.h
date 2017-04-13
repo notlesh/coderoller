@@ -3,11 +3,8 @@
 
 #include <memory>
 
-#include <roller/core/exception.h>
-
 #include "meta.h"
 
-using namespace roller;
 using std::shared_ptr;
 
 namespace cr {
