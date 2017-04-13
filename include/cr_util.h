@@ -37,7 +37,7 @@ char capitalize( char c );
 ui32 hash( const char* str, ui32 h = 0 );
 
 /**
- * Return the time since epoch in millis
+ * Return the time since epoch in millis. This comes from the stable[-ish] system clock.
  */
 ui64 getTimeMillis();
 

@@ -1,4 +1,6 @@
 #include <string.h>
+#include <chrono>
+#include <iostream>
 
 #include "core/types.h"
 #include "core/log.h"
@@ -9,6 +11,7 @@
 #include "cr_globals.h"
 #include "generate.h"
 #include "parse/parse.h"
+#include "cr_util.h"
 
 using namespace cr;
 
@@ -31,11 +34,32 @@ i32 main( i32 argc, char** argv ) {
 			return error;
 		}
 
+		typedef std::chrono::high_resolution_clock Clock;
+		auto start = Clock::now();
+
+		// parse XML
 		shared_ptr<GenConfig> config = parseXML( argv[1] );
+
+		auto now = Clock::now();
+		std::chrono::nanoseconds parseTime = std::chrono::duration_cast<std::chrono::nanoseconds>(now - start);
+		start = now;
+
 		config->_outputDir = g_outputDir;
+
+		// generate code
 		generateAll( config );
 
-		Log::i( "coderoller exiting 0" );
+		now = Clock::now();
+		std::chrono::nanoseconds genTime = std::chrono::duration_cast<std::chrono::nanoseconds>(now - start);
+
+		double parseTimeSec = (double)parseTime.count() / 1000000000.0;
+		double genTimeSec = (double)genTime.count() / 1000000000.0;
+
+		std::cout.precision(8);
+		std::cout << "--- Stats ---" << std::endl;
+		std::cout << "Parse time: " << std::fixed << parseTimeSec << " seconds" << std::endl;
+		std::cout << "Gen time: " << std::fixed << genTimeSec << " seconds" << std::endl;
+		std::cout << "Total time: " << std::fixed << (parseTimeSec + genTimeSec) << " seconds" << std::endl;
 
 		return 0;
 

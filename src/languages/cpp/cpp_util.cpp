@@ -5,7 +5,6 @@
 #include <fstream>
 #include <sstream>
 #include <ios>
-#include <chrono>
 
 #include "cr_constants.h"
 #include "cr_util.h"
@@ -178,13 +177,6 @@ ui32 hash( const char* str, ui32 h ) {
 		h = HASH_MULTIPLIER * h + *p;
 	}
 	return h; // or, h % ARRAY_SIZE;
-}
-
-// getTimeMillis
-ui64 getTimeMillis() {
-	// here's a taste of the T in STL...
-	std::chrono::time_point<std::chrono::system_clock> time = std::chrono::system_clock::now();
-	return std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count();
 }
 
 };

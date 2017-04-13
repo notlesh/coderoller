@@ -1,4 +1,5 @@
 #include <string.h>
+#include <chrono>
 
 #include "core/log.h"
 #include "core/types.h"
@@ -116,4 +117,12 @@ SerializableSpecification toSerializableSpecification( const char* str ) {
 char capitalize( char c ) {
 	return c - (97 - 65);
 }
+
+// getTimeMillis
+ui64 getTimeMillis() {
+	// here's a taste of the T in STL...
+	std::chrono::time_point<std::chrono::system_clock> time = std::chrono::system_clock::now();
+	return std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count();
+}
+
 };
