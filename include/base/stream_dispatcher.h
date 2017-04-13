@@ -4,7 +4,7 @@
 #include <map>
 #include <functional>
 
-#include "core/types.h"
+#include <roller/core/types.h>
 
 using namespace roller;
 using std::map;

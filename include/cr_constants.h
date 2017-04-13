@@ -1,8 +1,8 @@
 #ifndef __CR_CR_CONSTANTS_H_
 #define __CR_CR_CONSTANTS_H_
 
-#include "core/exception.h"
-#include "core/file.h"
+#include <roller/core/exception.h>
+#include <roller/core/file.h>
 
 using namespace roller;
 

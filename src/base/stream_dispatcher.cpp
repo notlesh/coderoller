@@ -1,6 +1,6 @@
 #include "base/stream_dispatcher.h"
 
-#include "core/log.h"
+#include <roller/core/log.h>
 
 #include "base/stream_roller.h"
 

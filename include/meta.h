@@ -4,8 +4,8 @@
 #include <string>
 #include <list>
 
-#include "core/types.h"
-#include "core/file.h"
+#include <roller/core/types.h>
+#include <roller/core/file.h>
 
 #include "cr_constants.h"
 

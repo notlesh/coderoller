@@ -6,7 +6,7 @@
 #include <list>
 #include <utility>
 
-#include "core/types.h"
+#include <roller/core/types.h>
 
 #include "base/serializable.h"
 

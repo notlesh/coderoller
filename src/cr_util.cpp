@@ -1,6 +1,6 @@
 #include <string.h>
 
-#include "core/log.h"
+#include <roller/core/log.h>
 
 #include "cr_util.h"
 

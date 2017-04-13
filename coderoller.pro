@@ -18,9 +18,9 @@ INCLUDEPATH += include/ \
 		../roller/include \
 		./tinyxml2/ \
 
-debug:LIBS += -L../roller/debug/ -lroller \
+debug:LIBS += -L../roller/core/debug/ -lroller_core \
  
-release:LIBS += -L../roller/release/ -lroller \
+release:LIBS += -L../roller/core/release/ -lroller_core \
 
 SOURCES = $$files(src/*.cpp) \
 		$$files(src/languages/*.cpp) \

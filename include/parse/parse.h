@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "core/exception.h"
+#include <roller/core/exception.h>
 #include "tinyxml2.h"
 
 #include "meta.h"

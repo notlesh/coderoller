@@ -5,8 +5,8 @@
 #include <vector>
 #include <utility>
 
-#include "core/types.h"
-#include "core/exception.h"
+#include <roller/core/types.h>
+#include <roller/core/exception.h>
 
 #include "base/serializable.h"
 

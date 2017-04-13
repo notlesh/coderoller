@@ -2,8 +2,8 @@
 
 #include "tinyxml2.h"
 
-#include "core/log.h"
-#include "core/util.h"
+#include <roller/core/log.h>
+#include <roller/core/util.h>
 
 #include "cr_globals.h"
 #include "cr_util.h"
