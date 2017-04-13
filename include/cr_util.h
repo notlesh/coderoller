@@ -9,7 +9,7 @@ namespace cr {
 /**
  * Returns the DataType from the given input
  */
-DataType toDataType( const char* str );
+DataType toDataType(const std::string& str);
 
 /**
  * Returns the Language from the given input

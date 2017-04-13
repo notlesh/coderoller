@@ -1,0 +1,41 @@
+<!-- demonstrates how to use compound objects -->
+<CodeRoller languages="CPP" defaultMemberPrivacy="private" defaultSerializable="true">
+
+	<class name="ImageData" serializable="true">
+
+		<field 
+			name="name" 
+			type="string"
+			default=".0"
+			memberPrivacy="public" />
+
+		<field 
+			name="width" 
+			type="i64"
+			default=".0"
+			memberPrivacy="public" />
+
+		<field 
+			name="height" 
+			type="i64"
+			default="0"
+			memberPrivacy="public" />
+	</class>
+
+	<class name="ImageSet" serializable="false">
+
+		<field
+			name="image1"
+			type="object:ImageData" />
+
+		<field
+			name="image2"
+			type="object:ImageData" />
+
+		<field
+			name="image3"
+			type="object:ImageData" />
+
+	</class>
+
+</CodeRoller>

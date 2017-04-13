@@ -257,7 +257,7 @@ void CPPClassGenerator::writeHHeaderInclude( bool classSerializable, const Class
 		bool addedBlankLine = false;
 		for ( Field f : c._fields ) {
 
-			if ( f._dataType == DataType::SERIALIZABLE ) {
+			if ( f._dataType == DataType::OBJECT ) {
 
 				if ( includedFiles.find( f._typeName ) == includedFiles.end() ) {
 
@@ -370,7 +370,7 @@ void CPPClassGenerator::writeConstructors( const Class& c ) {
 void CPPClassGenerator::writeMoveAssignment( const Field& f ) {
 	if ( f._dataType == DataType::STRING || f._dataType == DataType::BLOB ) {
 		_cppStream	<< "\t_" << f._name << ".swap( other._" << f._name << " );" << endl;
-	} else if (  f._dataType == DataType::SERIALIZABLE ) {
+	} else if (  f._dataType == DataType::OBJECT ) {
 		_cppStream	<< "\t_" << f._name << " = std::move( other._" << f._name << " );" << endl;
 	} else {
 		_cppStream	<< "\t_" << f._name << " = other._" << f._name << ";" << endl;
@@ -380,7 +380,7 @@ void CPPClassGenerator::writeMoveAssignment( const Field& f ) {
 
 // writeCopyAssignment
 void CPPClassGenerator::writeCopyAssignment( const Field& f ) {
-	if ( f._dataType == DataType::BLOB || f._dataType == DataType::SERIALIZABLE ) {
+	if ( f._dataType == DataType::BLOB || f._dataType == DataType::OBJECT ) {
 		_cppStream	<< "\t_" << f._name << ".copyFrom( other._" << f._name << " );" << endl;
 	} else {
 		_cppStream	<< "\t_" << f._name << " = other._" << f._name << ";" << endl;
@@ -390,7 +390,7 @@ void CPPClassGenerator::writeCopyAssignment( const Field& f ) {
 
 // writeCloneAssignment
 void CPPClassGenerator::writeCloneAssignment( const Field& f ) {
-	if ( f._dataType == DataType::BLOB || f._dataType == DataType::SERIALIZABLE ) {
+	if ( f._dataType == DataType::BLOB || f._dataType == DataType::OBJECT ) {
 		_cppStream	<< "\tcopy._" << f._name << ".copyFrom( _" << f._name << " );" << endl;
 	} else {
 		_cppStream	<< "\tcopy._" << f._name << " = _" << f._name << ";" << endl;
@@ -405,14 +405,14 @@ void CPPClassGenerator::writeFieldAccessors( const Class& c, const Field& f ) {
 	capitalized += (f._name.c_str() + 1);
 
 	string typeName;
-	if ( f._dataType == DataType::SERIALIZABLE ) {
+	if ( f._dataType == DataType::OBJECT ) {
 		typeName = f._typeName;
 	} else {
 		typeName = getDataTypeName( f._dataType );
 	}
 
 	// write declarations
-	if ( f._dataType == DataType::STRING || f._dataType == DataType::SERIALIZABLE ) {
+	if ( f._dataType == DataType::STRING || f._dataType == DataType::OBJECT ) {
 
 		// string type
 		_hStream << "\t" << typeName << "& get" << capitalized << "();" << endl;
@@ -434,7 +434,7 @@ void CPPClassGenerator::writeFieldAccessors( const Class& c, const Field& f ) {
 	}
 
 	// write definitions
-	if ( f._dataType == DataType::STRING || f._dataType == DataType::SERIALIZABLE ) {
+	if ( f._dataType == DataType::STRING || f._dataType == DataType::OBJECT ) {
 
 		// getter non-const
 		_cppStream << typeName << "& " << c._name << "::" << "get" << capitalized << "() {" << endl;
@@ -504,7 +504,7 @@ void CPPClassGenerator::writeFieldAccessors( const Class& c, const Field& f ) {
 
 // writeField
 void CPPClassGenerator::writeField( const Field& f ) {
-	if ( f._dataType == DataType::SERIALIZABLE ) {
+	if ( f._dataType == DataType::OBJECT ) {
 		_hStream << "\t" << f._typeName << " _" << f._name << ";" << endl;
 	} else {
 		_hStream << "\t" << getDataTypeName( f._dataType ) << " _" << f._name << ";" << endl;
@@ -577,7 +577,7 @@ void CPPClassGenerator::writeSerialize( const Class& c, list<Field>& publicField
 
 // writeSerializeField
 void CPPClassGenerator::writeSerializeField( const Field& f ) {
-	if ( f._dataType == DataType::SERIALIZABLE ) {
+	if ( f._dataType == DataType::OBJECT ) {
 		_cppStream << "\twritten += _" << f._name << ".serialize( ((char*)buffer + written) );" << endl;
 	} else {
 		_cppStream << "\twritten += Serialization::write( ((char*)buffer + written), _" << f._name << " );" << endl;
@@ -610,7 +610,7 @@ void CPPClassGenerator::writeGetSerializedSizeField( const Field& f ) {
 		_cppStream << "\tsize += sizeof( i64 ) + _" << f._name << ".size(); // _" << f._name << endl;
 	} else if ( f._dataType == DataType::BLOB ) {
 		_cppStream << "\tsize += sizeof( i64 ) + _" << f._name << ".getSize(); // _" << f._name << endl;
-	} else if ( f._dataType == DataType::SERIALIZABLE ) {
+	} else if ( f._dataType == DataType::OBJECT ) {
 		_cppStream << "\tsize += _" << f._name << ".getSerializedSize(); // _" << f._name << endl;
 	} else {
 		_cppStream << "\tsize += sizeof( " << getDataTypeName( f._dataType ) << " ); // _" << f._name << endl;
@@ -641,7 +641,7 @@ void CPPClassGenerator::writeInternalize( const Class& c, list<Field>& publicFie
 void CPPClassGenerator::writeInternalizeField( const Field& f ) {
 	if ( f._dataType == DataType::STRING || f._dataType == DataType::BLOB ) {
 		_cppStream << "\tread += Serialization::read( ((char*)buffer + read), _" << f._name << " );" << endl;
-	} else if ( f._dataType == DataType::SERIALIZABLE ) {
+	} else if ( f._dataType == DataType::OBJECT ) {
 		_cppStream << "\tread += _" << f._name << ".internalize( ((char*)buffer + read) );" << endl;
 	} else {
 		_cppStream << "\tread += Serialization::read( ((char*)buffer + read), &_" << f._name << " );" << endl;

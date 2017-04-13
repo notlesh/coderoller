@@ -29,7 +29,7 @@ enum class DataType {
 
 	STRING,
 	BLOB,
-	SERIALIZABLE,
+	OBJECT,
 
 	// integer types
 	I8, UI8,
