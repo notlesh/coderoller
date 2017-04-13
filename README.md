@@ -1,0 +1,1 @@
+Coderoller is a code generation tool written in C++ which generates data objects (think "Plain Old Data" or "Java Beans"). It aims to be modular, allowing for multiple outputs (languages, etc.) from a given input. Input files are XML.
