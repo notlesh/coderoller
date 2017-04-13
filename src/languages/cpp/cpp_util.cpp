@@ -30,40 +30,40 @@ const char* getDataTypeName( DataType type ) {
 			return "";
 
 		case DataType::STRING:
-			return "string";
+			return "std::string";
 
 		case DataType::BLOB:
 			return "ByteArray";
 
 		case DataType::I8:
-			return "i8";
+			return "int8_t";
 
 		case DataType::UI8:
-			return "ui8";
+			return "uint8_t";
 
 		case DataType::I16:
-			return "i16";
+			return "int16_t";
 
 		case DataType::UI16:
-			return "ui16";
+			return "uint16_t";
 
 		case DataType::I32:
-			return "i32";
+			return "int32_t";
 
 		case DataType::UI32:
-			return "ui32";
+			return "uint32_t";
 
 		case DataType::I64:
-			return "i64";
+			return "int64_t";
 
 		case DataType::UI64:
-			return "ui64";
+			return "uint64_t";
 
 		case DataType::F32:
-			return "f32";
+			return "float";
 
 		case DataType::F64:
-			return "f64";
+			return "double";
 
 		case DataType::BOOLEAN:
 			return "bool";

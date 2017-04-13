@@ -130,7 +130,7 @@ void CPPClassGenerator::generate(
 	_hStream << endl;
 
 	// write s_classHash at top of cpp file
-	_cppStream << "i32 " << c._name << "::s_classHash = " << "__CR_HASH_" << c._name << ";" << endl << endl;
+	_cppStream << "int32_t " << c._name << "::s_classHash = " << "__CR_HASH_" << c._name << ";" << endl << endl;
 
 	writeConstructors( c );
 
@@ -169,7 +169,7 @@ void CPPClassGenerator::generate(
 	}
 
 	// write out static method to return hash code
-	_hStream << "\tstatic i32 s_classHash;" << endl << endl;
+	_hStream << "\tstatic int32_t s_classHash;" << endl << endl;
 
 	// add other fields by access type
 	if ( protectedFields.size() > 0 ) {
@@ -238,18 +238,15 @@ void CPPClassGenerator::writeCPPHeaderInclude( const char* headerFilename ) {
 
 // writeCPPUsingDeclarations
 void CPPClassGenerator::writeCPPUsingDeclarations( bool classSerializable ) {
-	_cppStream << "using namespace roller;" << endl;
 	if ( classSerializable ) {
 		_cppStream << "using namespace cr;" << endl;
 	}
-	_cppStream << "using std::string;" << endl;
 }
 
 // writeHHeaderInclude
 void CPPClassGenerator::writeHHeaderInclude( bool classSerializable, const Class& c ) {
 	_hStream		<< "#include <string>" << endl
-				<< endl
-				<< "#include \"core/types.h\"" << endl;
+				<< endl;
 	if ( classSerializable ) {
 		_hStream		<< "#include \"core/serialization.h\"" << endl
 					<< endl
@@ -280,11 +277,9 @@ void CPPClassGenerator::writeHHeaderInclude( bool classSerializable, const Class
 
 // writeHUsingDeclarations
 void CPPClassGenerator::writeHUsingDeclarations( bool classSerializable ) {
-	_hStream << "using namespace roller;" << endl;
 	if ( classSerializable ) {
 		_hStream << "using namespace cr;" << endl;
 	}
-	_hStream << "using std::string;" << endl;
 }
 
 // writeHashDef
@@ -541,7 +536,7 @@ void CPPClassGenerator::writeSerializationDeclarations() {
 	_hStream << "\tvirtual i64 serialize( void* buffer ) const;" << endl
 			<< "\tvirtual i64 getSerializedSize() const;" << endl
 			<< "\tvirtual i64 internalize( void* buffer );" << endl
-			<< "\tvirtual i32 getClassHash() const;" << endl;
+			<< "\tvirtual int32_t getClassHash() const;" << endl;
 }
 
 // writeSerializationDeclarations
@@ -656,7 +651,7 @@ void CPPClassGenerator::writeInternalizeField( const Field& f ) {
 // writeGetClassHash
 void CPPClassGenerator::writeGetClassHash( const Class& c ) {
 
-	_cppStream	<< "i32 " << c._name << "::getClassHash() const {" << endl
+	_cppStream	<< "int32_t " << c._name << "::getClassHash() const {" << endl
 				<< "\treturn __CR_HASH_" << c._name << ";" << endl
 				<< "}" << endl;
 }
