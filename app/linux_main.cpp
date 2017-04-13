@@ -94,6 +94,15 @@ i32 parseCL( i32 argc, char** argv ) {
 	}
 
 	g_outputDir = File( argv[2] );
+	if (! g_outputDir.exists()) {
+		// our File class doesn't do too well with non-existent files, esp. when it comes to mkdir
+		// g_outputDir.mkdir(true);
+
+		// ...so just make a system call...
+		char buffer[4096];
+		snprintf(buffer, sizeof(buffer), "mkdir %s", argv[2]);
+		system(buffer); // exec "mkdir <argv[2]>"
+	}
 	if ( ! g_outputDir.exists() && ! g_outputDir.isDir() ) {
 		throw CRException( "Invalid output directory %s", argv[2] );
 	}
